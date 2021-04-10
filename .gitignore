@@ -1,4 +1,8 @@
-# Compiled class file
+.idea
+Schnapsen.iml
+out
+
+ Compiled class file
 *.class
 
 # Log file

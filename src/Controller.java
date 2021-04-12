@@ -100,9 +100,9 @@ class Controller {
         System.out.println(p.getName() + " is on turn");
         System.out.println("Please throw a Card or make another action");
 
-        playerActionOptions (p);
-    int i = scanner.nextInt();
-            playerActionExecution(p, i);
+        playerActionOptions(p);
+        int i = scanner.nextInt();
+        playerActionExecution(p, i);
         playerAction(p);
     }
 
@@ -111,23 +111,13 @@ class Controller {
 
         for (int i = 0; i < p.getCardsInHand().size(); i++) {
 
-            int action = i+1;
-
-            if (ports.size() > 0){
-                if (checkColour(p.getCardsInHand().get(i))) {
-                    hasMatchOnTable = true;
-                    System.out.println("Action " + (action) + ": Throw " + p.getCardsInHand().get(i).getName());
-                }
-
-            } if (!hasMatchOnTable) {
-                System.out.println("Action " + (action) + ": Throw " +  p.getCardsInHand().get(i).getName());
-            }
+            printCardToThrow(p, i);
         }
     }
 
     private void turnSwitcher(ArrayList<Port> ports) {
 
-        if (players.size() == ports.size()){
+        if (players.size() == ports.size()) {
             tricks();
         }
 
@@ -149,8 +139,8 @@ class Controller {
 
         Port winCard = ports.get(0);
 
-            for (Port port : ports) {
-                winCard = checkWinCard(winCard, port);
+        for (Port port : ports) {
+            winCard = checkWinCard(winCard, port);
 
         }
         try {
@@ -172,8 +162,6 @@ class Controller {
         announceWinner(winPlayer);
         System.exit(0);
     }
-
-
 
 
     private Card throwCard(Player p, int i) {
@@ -257,19 +245,19 @@ class Controller {
         return checkIfCardIsTrumpf && checkIfCardmatchescolour;
     }
 
-    private void playerActionOptions (Player p) {
-            showCardsToThrow(p);
+    private void playerActionOptions(Player p) {
+        showCardsToThrow(p);
 
-            System.out.println("Action 6: Change the Trumpfcard");
+        System.out.println("Action 6: Change the Trumpfcard");
 
-            if (deck.getStapel().size() > 0) {
-                System.out.println("Action 7: Block the stapel");
-            }
-            System.out.println("Action 8: Bet on ending the Game and start counting!");
-
+        if (deck.getStapel().size() > 0) {
+            System.out.println("Action 7: Block the stapel");
         }
+        System.out.println("Action 8: Bet on ending the Game and start counting!");
 
-    private void playerActionExecution (Player p, Integer i) {
+    }
+
+    private void playerActionExecution(Player p, Integer i) {
 
         if (i < 5) {
             ports.add(new Port(p, throwCard(p, i)));
@@ -293,11 +281,26 @@ class Controller {
         }
     }
 
-    private Card changeTrumpfCard (Player p, Card card) {
-        if (card.getColor().equals(deck.getTrumpf().getColor())){
+    private Card changeTrumpfCard(Player p, Card card) {
+        if (card.getColor().equals(deck.getTrumpf().getColor())) {
             p.getCardsInHand().add(deck.getTrumpf());
             deck.setTrumpf(card);
         }
         return card;
+    }
+
+    private void printCardToThrow(Player p, Integer i) {
+
+        int action = i + 1;
+
+        if (ports.size() > 0) {
+            if (checkColour(p.getCardsInHand().get(i))) {
+                System.out.println(BLACK_BOLD + "Action " + (action) + ": Throw " + p.getCardsInHand().get(i).getName() + RESET);
+            } else {
+                System.out.println("Action " + (action) + ": Throw " + p.getCardsInHand().get(i).getName());
+            }
+        } else {
+            System.out.println("Action " + (action) + ": Throw " + p.getCardsInHand().get(i).getName());
+        }
     }
 }

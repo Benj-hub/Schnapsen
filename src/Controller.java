@@ -49,13 +49,13 @@ class Controller {
 
         dealCards();
 
-        for (Card c:
-             p1.getCardsInHand()) {
+        for (Card c :
+                p1.getCardsInHand()) {
             System.out.println(c.getName());
         }
         System.out.println("=================================");
-        for (Card c:
-             p2.getCardsInHand()) {
+        for (Card c :
+                p2.getCardsInHand()) {
             System.out.println(c.getName());
         }
 
@@ -86,70 +86,72 @@ class Controller {
                 }
                 p.setCardsInHand(tempHand);
             }
-
-
         }
     }
 
     private void firstTurn() {
-
-
         Collections.shuffle(players);
         System.out.println();
         playerAction(players.get(0));
     }
 
+    private void playerAction(Player p) {
+
+        System.out.println(p.getName() + " is on turn");
+        System.out.println("Please throw a Card or make another action");
+
+        playerActionOptions (p);
+    int i = scanner.nextInt();
+            playerActionExecution(p, i);
+        playerAction(p);
+    }
+
+    private void showCardsToThrow(Player p) {
+        boolean hasMatchOnTable = false;
+
+        for (int i = 0; i < p.getCardsInHand().size(); i++) {
+
+            int action = i+1;
+
+            if (ports.size() > 0){
+                if (checkColour(p.getCardsInHand().get(i))) {
+                    hasMatchOnTable = true;
+                    System.out.println("Action " + (action) + ": Throw " + p.getCardsInHand().get(i).getName());
+                }
+
+            } if (!hasMatchOnTable) {
+                System.out.println("Action " + (action) + ": Throw " +  p.getCardsInHand().get(i).getName());
+            }
+        }
+    }
+
     private void turnSwitcher(ArrayList<Port> ports) {
+
+        if (players.size() == ports.size()){
+            tricks();
+        }
 
         for (Player p : players) {
             for (int i = 0; i < ports.size(); i++) {
                 if (p.equals(ports.get(i).getPlayer())) {
-                       if (i < players.size()){
-                           playerAction(players.get(i+1));
-                       } else {
-                           playerAction(players.get(0));
-                       }
+                    if (i < players.size()) {
+                        playerAction(players.get(i + 1));
+                    } else {
+                        playerAction(players.get(0));
+                    }
                 }
             }
         }
     }
 
-    private void tricks(ArrayList<Port> ports) {
+
+    private void tricks() {
 
         Port winCard = ports.get(0);
 
-
-        if (ports.size() == players.size()) {
-
             for (Port port : ports) {
+                winCard = checkWinCard(winCard, port);
 
-                boolean a = port.getCard().getValue() > winCard.getCard().getValue();
-                boolean b = port.getCard().getColor().equals(winCard.getCard().getColor());
-                boolean c = port.getCard().getColor().equals(deck.getTrumpf().getColor());
-                boolean d = !winCard.getCard().getColor().equals(deck.getTrumpf().getColor());
-
-                if ((a && b) || (c && d)) {
-                    winCard = port;
-                }
-            }
-            for (Port p : ports) {
-                if (p.getPlayer().equals(winCard.getPlayer())) {
-                    System.out.println("Player " + p.getPlayer().getName() + " won cards: ");
-
-                    for (int j = 0; j < ports.size(); j++) {
-                        p.getPlayer().getPreviousTricks().add(ports.get(j).getCard());
-                        p.getPlayer().setScore(p.getPlayer().getScore() + ports.get(j).getCard().getValue());
-                        System.out.print(ports.get(j).getCard().getName());
-                        if (j < ports.size() - 1) {
-                            System.out.print(", ");
-
-                        }
-                    }
-                    System.out.println();
-                }
-                ports.clear();
-                playerAction(p.getPlayer());
-            }
         }
         try {
             Thread.sleep(2000);
@@ -158,127 +160,30 @@ class Controller {
         }
 
         System.out.println("\nTurn ended \n");
-        turnSwitcher(ports);
+        findPlayerToWinCard(winCard);
+        playerAction(winCard.getPlayer());
     }
 
     private void endingGame(Player p) {
         Player winPlayer = p;
-        int i = 1;
         for (Player temp : players) {
-
-            if (temp.getScore() > winPlayer.getScore()) {
-                winPlayer = temp;
-            }
-            if (i == players.size())
-                System.out.println("Player " + temp.getName() + ": " + temp.getScore());
-            i++;
+            winPlayer = searchWinner(p, winPlayer);
         }
-        if (winPlayer.getScore() < 33) {
-            System.out.println("Player " + p.getName() + " called too early and lost the game");
-        } else {
-            System.out.println("\nPlayer " + winPlayer.getName() + " wins!");
-            System.out.println("Points: " + winPlayer.getScore());
-        }
+        announceWinner(winPlayer);
         System.exit(0);
     }
 
-    private void playerAction(Player p) {
 
-        int j = 1;
-        boolean haveMatchCardInHand = false;
 
-        System.out.println(p.getName() + " is on turn");
-        System.out.println("Please throw a Card or make another action");
 
-        if (ports.size() > 0) {
-            for (int i = 0; i < p.getCardsInHand().size(); i++) {
-                if (ports.get(0).getCard().getColor().equals(p.getCardsInHand().get(i).getColor())
-                        || deck.getTrumpf().getColor().equals(p.getCardsInHand().get(i).getColor())) {
-                    haveMatchCardInHand = true;
-                    System.out.println("Action " + (i + 1) + ": Throw " + p.getCardsInHand().get(i).getName());
+    private Card throwCard(Player p, int i) {
+        i--;
+        System.out.println(GREEN_BOLD + "You threw: " + p.getCardsInHand().get(i).getName() + RESET);
 
-                    j = scanner.nextInt();
-
-                    if (j < 6) {
-                        j--;
-                        System.out.println(GREEN_BOLD + "You threw: " + p.getCardsInHand().get(j).getName() + RESET);
-                        System.out.println();
-                        p.getCardsInHand().remove(p.getCardsInHand().get(j));
-                        drawCard(p);
-                        Port port = new Port(p, p.getCardsInHand().get(j));
-                        ports.add(port);
-                        tricks(ports);
-                    }
-                }
-
-                }
-        } if (!haveMatchCardInHand) {
-            for (int i = 0; i < p.getCardsInHand().size(); i++) {
-
-                System.out.println("Action " + (i + 1) + ": Throw " + p.getCardsInHand().get(i).getName());
-
-            }
-
-            System.out.println("Action 6: Change the Trumpfcard");
-
-            if (deck.getStapel().size() > 0) {
-                System.out.println("Action 7: Block the stapel");
-            }
-            System.out.println("Action 8: Bet on ending the Game and start counting!");
-
-            j = scanner.nextInt();
-
-            if (j < 6) {
-                j--;
-                System.out.println(GREEN_BOLD + "You threw: " + p.getCardsInHand().get(j).getName() + RESET);
-                System.out.println();
-                p.getCardsInHand().remove(p.getCardsInHand().get(j));
-                drawCard(p);
-                Port port = new Port(p, p.getCardsInHand().get(j));
-                ports.add(port);
-                tricks(ports);
-            }
-        }
-
-        switch (j) {
-            case 6:
-                p.getCardsInHand().add(deck.trumpfChange(showCardsInHand(p)));
-            case 7:
-                if (deck.getStapel().size() > 0) {
-                    deck.blockStapel();
-                    playerAction(p);
-                } else {
-                    System.out.println("Stapel already blocked!");
-                }
-            case 8:
-                endingGame(p);
-        }
-        playerAction(p);
-    }
-
-    private Card showCardsInHand(Player p) {
-
-        for (int i = 1; i < p.getCardsInHand().size(); i++) {
-
-            System.out.println("Action " + i + ": Throw " + p.getCardsInHand().get(i - 1).getName());
-
-        }
-        System.out.println("Action 6: Go back to options");
-
-        int i = scanner.nextInt();
-
-        if (i < 6) {
-            System.out.println("You threw: " + p.getCardsInHand().get(i - 1));
-            System.out.println();
-            p.getCardsInHand().remove(p.getCardsInHand().get(i - 1));
-            return p.getCardsInHand().get(i - 1);
-        }
-
-        if (i == 6) {
-            playerAction(p);
-        }
-        showCardsInHand(p);
-        return null;
+        Card temp = p.getCardsInHand().get(i);
+        p.getCardsInHand().remove(p.getCardsInHand().get(i));
+        drawCard(p);
+        return temp;
     }
 
     private void drawCard(Player p) {
@@ -292,4 +197,107 @@ class Controller {
         }
     }
 
+    private Player findPlayerToWinCard(Port winCard) {
+        for (Port p : ports) {
+            if (p.getPlayer().equals(winCard.getPlayer())) {
+                System.out.println("Player " + p.getPlayer().getName() + " won cards: ");
+
+                for (int j = 0; j < ports.size(); j++) {
+                    p.getPlayer().getPreviousTricks().add(ports.get(j).getCard());
+                    p.getPlayer().setScore(p.getPlayer().getScore() + ports.get(j).getCard().getValue());
+                    System.out.print(ports.get(j).getCard().getName());
+                    if (j < ports.size() - 1) {
+                        System.out.print(", ");
+
+                    }
+                }
+                System.out.println();
+            }
+            ports.clear();
+            return p.getPlayer();
+        }
+        return null;
+    }
+
+
+    private Port checkWinCard(Port winCard, Port port) {
+
+        boolean checkIfCardIsHigher = port.getCard().getValue() > winCard.getCard().getValue();
+        boolean checkIfCardmatchescolour = port.getCard().getColor().equals(winCard.getCard().getColor());
+        boolean checkIfCardIsTrumpf = port.getCard().getColor().equals(deck.getTrumpf().getColor());
+        boolean checkIfWincardIsTrumpf = winCard.getCard().getColor().equals(deck.getTrumpf().getColor());
+
+        if ((checkIfCardIsHigher && checkIfCardmatchescolour) || (checkIfCardIsTrumpf && !checkIfWincardIsTrumpf)) {
+            winCard = port;
+        }
+        return winCard;
+    }
+
+    private Player searchWinner(Player p, Player winPlayer) {
+
+        if (p.getScore() > winPlayer.getScore()) {
+            return p;
+        }
+        return winPlayer;
+    }
+
+    private void announceWinner(Player winPlayer) {
+        if (winPlayer.getScore() < 33) {
+            System.out.println("Player " + winPlayer.getName() + " called too early and lost the game");
+        } else {
+            System.out.println("\nPlayer " + winPlayer.getName() + " wins!");
+            System.out.println("Points: " + winPlayer.getScore());
+        }
+    }
+
+    private Boolean checkColour(Card card) {
+        boolean checkIfCardmatchescolour = card.getColor().equals(ports.get(0).getCard().getColor());
+        boolean checkIfCardIsTrumpf = card.getColor().equals(deck.getTrumpf().getColor());
+
+        return checkIfCardIsTrumpf && checkIfCardmatchescolour;
+    }
+
+    private void playerActionOptions (Player p) {
+            showCardsToThrow(p);
+
+            System.out.println("Action 6: Change the Trumpfcard");
+
+            if (deck.getStapel().size() > 0) {
+                System.out.println("Action 7: Block the stapel");
+            }
+            System.out.println("Action 8: Bet on ending the Game and start counting!");
+
+        }
+
+    private void playerActionExecution (Player p, Integer i) {
+
+        if (i < 5) {
+            ports.add(new Port(p, throwCard(p, i)));
+            turnSwitcher(ports);
+        }
+        switch (i) {
+            case 6:
+                System.out.println("Which card do you change the Trumpf with?");
+                changeTrumpfCard(p, throwCard(p, i));
+
+            case 7:
+                if (deck.getStapel().size() > 0) {
+                    deck.blockStapel();
+                } else {
+                    System.out.println("Stapel already blocked!");
+                }
+                playerAction(p);
+            case 8:
+                endingGame(p);
+
+        }
+    }
+
+    private Card changeTrumpfCard (Player p, Card card) {
+        if (card.getColor().equals(deck.getTrumpf().getColor())){
+            p.getCardsInHand().add(deck.getTrumpf());
+            deck.setTrumpf(card);
+        }
+        return card;
+    }
 }

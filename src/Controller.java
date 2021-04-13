@@ -107,10 +107,7 @@ class Controller {
     }
 
     private void showCardsToThrow(Player p) {
-        boolean hasMatchOnTable = false;
-
-        for (int i = 0; i < p.getCardsInHand().size(); i++) {
-
+             for (int i = 0; i < p.getCardsInHand().size(); i++) {
             printCardToThrow(p, i);
         }
     }
@@ -176,13 +173,23 @@ class Controller {
 
     private void drawCard(Player p) {
         if (deck.getStapel().size() == 0) {
-            p.getCardsInHand().add(deck.getTrumpf());
-            deck.setTrumpf(null);
+            if (deck.getTrumpf() != null) {
+                drawTrumpf(p);
+            }
             System.out.println(YELLOW_BOLD + "Stapel is empty!" + RESET);
         } else {
-            p.getCardsInHand().add(deck.getStapel().get(0));
-            deck.getStapel().remove(deck.getStapel().get(0));
+            drawNewCard(p);
         }
+    }
+
+    private void drawTrumpf(Player p) {
+        p.getCardsInHand().add(deck.getTrumpf());
+        deck.setTrumpf(null);
+    }
+
+    private void drawNewCard(Player p) {
+        p.getCardsInHand().add(deck.getStapel().get(0));
+        deck.getStapel().remove(deck.getStapel().get(0));
     }
 
     private Player findPlayerToWinCard(Port winCard) {
@@ -242,7 +249,7 @@ class Controller {
         boolean checkIfCardmatchescolour = card.getColor().equals(ports.get(0).getCard().getColor());
         boolean checkIfCardIsTrumpf = card.getColor().equals(deck.getTrumpf().getColor());
 
-        return checkIfCardIsTrumpf && checkIfCardmatchescolour;
+        return checkIfCardIsTrumpf || checkIfCardmatchescolour;
     }
 
     private void playerActionOptions(Player p) {
@@ -259,7 +266,7 @@ class Controller {
 
     private void playerActionExecution(Player p, Integer i) {
 
-        if (i < 5) {
+        if (i < 6) {
             ports.add(new Port(p, throwCard(p, i)));
             turnSwitcher(ports);
         }
@@ -303,4 +310,5 @@ class Controller {
             System.out.println("Action " + (action) + ": Throw " + p.getCardsInHand().get(i).getName());
         }
     }
+
 }

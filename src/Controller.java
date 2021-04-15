@@ -108,7 +108,7 @@ class Controller {
     }
 
     private void showCardsToThrow(Player p) {
-             for (int i = 0; i < p.getCardsInHand().size(); i++) {
+        for (int i = 0; i < p.getCardsInHand().size(); i++) {
             printCardToThrow(p, i);
         }
     }
@@ -168,7 +168,6 @@ class Controller {
 
         Card temp = p.getCardsInHand().get(i);
         p.getCardsInHand().remove(p.getCardsInHand().get(i));
-        drawCard(p);
         return temp;
     }
 
@@ -267,38 +266,47 @@ class Controller {
 
     private void playerActionExecution(Player p, Integer i) {
 
-        try{
-        if (i < 6) {
-            ports.add(new Port(p, throwCard(p, i)));
-            turnSwitcher(ports);
-        }
-        switch (i) {
-            case 6:
-                System.out.println("Which card do you change the Trumpf with?");
-                changeTrumpfCard(p, throwCard(p, i));
+        try {
+            if (i < 6) {
+                ports.add(new Port(p, throwCard(p, i)));
+                drawCard(p);
+                turnSwitcher(ports);
+            }
+            switch (i) {
+                case 6:
+                    System.out.println("Which card do you change the Trumpf with?");
+                    showCardsToThrow(p);
+                    i = scanner.nextInt();
+                    changeTrumpfCard(p, throwCard(p, i));
 
-            case 7:
-                if (deck.getStapel().size() > 0) {
-                    deck.blockStapel();
-                } else {
-                    System.out.println("Stapel already blocked!");
-                }
-                playerAction(p);
-            case 8:
-                endingGame(p);
-        }
+                case 7:
+                    if (deck.getStapel().size() > 0) {
+                        System.out.println("You blocked the Stapel");
+                        deck.blockStapel();
+                    } else {
+                        System.out.println("Stapel already blocked!");
+                    }
+                    playerAction(p);
+                case 8:
+                    endingGame(p);
+            }
         } catch (InputMismatchException input) {
             System.out.println("Input couldn't be read: " + input.getMessage());
             playerActionExecution(p, i);
         }
     }
 
-    private Card changeTrumpfCard(Player p, Card card) {
+    private void changeTrumpfCard(Player p, Card card) {
         if (card.getColor().equals(deck.getTrumpf().getColor())) {
             p.getCardsInHand().add(deck.getTrumpf());
             deck.setTrumpf(card);
+            System.out.println(p.getName() + " gets Trump Card.");
+            System.out.println("Trump changed to " + card.getName());
+        } else {
+            System.out.println(card.getName() + " doesn't match");
         }
-        return card;
+
+        playerAction(p);
     }
 
     private void printCardToThrow(Player p, Integer i) {

@@ -86,6 +86,10 @@ class Deck {
         this.trumpf = trumpf;
     }
 
+    public String getTrumpfColor() {
+        return trumpfColor;
+    }
+
     public ArrayList<Card> getStapel() {
         return stapel;
     }

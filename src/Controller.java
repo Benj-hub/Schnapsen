@@ -2,6 +2,7 @@
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 class Controller {
@@ -219,8 +220,8 @@ class Controller {
 
         boolean checkIfCardIsHigher = port.getCard().getValue() > winCard.getCard().getValue();
         boolean checkIfCardmatchescolour = port.getCard().getColor().equals(winCard.getCard().getColor());
-        boolean checkIfCardIsTrumpf = port.getCard().getColor().equals(deck.getTrumpf().getColor());
-        boolean checkIfWincardIsTrumpf = winCard.getCard().getColor().equals(deck.getTrumpf().getColor());
+        boolean checkIfCardIsTrumpf = port.getCard().getColor().equals(deck.getTrumpfColor());
+        boolean checkIfWincardIsTrumpf = winCard.getCard().getColor().equals(deck.getTrumpfColor());
 
         if ((checkIfCardIsHigher && checkIfCardmatchescolour) || (checkIfCardIsTrumpf && !checkIfWincardIsTrumpf)) {
             winCard = port;
@@ -247,7 +248,7 @@ class Controller {
 
     private Boolean checkColour(Card card) {
         boolean checkIfCardmatchescolour = card.getColor().equals(ports.get(0).getCard().getColor());
-        boolean checkIfCardIsTrumpf = card.getColor().equals(deck.getTrumpf().getColor());
+        boolean checkIfCardIsTrumpf = card.getColor().equals(deck.getTrumpfColor());
 
         return checkIfCardIsTrumpf || checkIfCardmatchescolour;
     }
@@ -266,6 +267,7 @@ class Controller {
 
     private void playerActionExecution(Player p, Integer i) {
 
+        try{
         if (i < 6) {
             ports.add(new Port(p, throwCard(p, i)));
             turnSwitcher(ports);
@@ -284,7 +286,10 @@ class Controller {
                 playerAction(p);
             case 8:
                 endingGame(p);
-
+        }
+        } catch (InputMismatchException input) {
+            System.out.println("Input couldn't be read: " + input.getMessage());
+            playerActionExecution(p, i);
         }
     }
 

@@ -25,6 +25,11 @@ class Controller {
         players.add(p1);
         players.add(p2);
 
+        for (Player player:
+             players) {
+            System.out.println(player.getName());
+        }
+
 
         dealCards();
 
@@ -38,7 +43,7 @@ class Controller {
             System.out.println(c.getName());
         }
 
-        System.out.println("Trumpf card is: " + Deck.getTrumpf().getName());
+        System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + Deck.getTrumpf().getName() + Fonts.RESET);
 
         try {
             Thread.sleep(1000);
@@ -74,7 +79,14 @@ class Controller {
     }
 
     static void turnSwitcher(Player playerFromClass, Card card) {
+        System.out.println("started turnswitcher");
+        System.out.println(Fonts.BLUE_BOLD + "Turn ended" + Fonts.RESET);
+
         ports.add(new Port(playerFromClass, card));
+        for (Port p:
+                ports) {
+            System.out.println(p.getCard().getName());
+        }
         if (players.size() == ports.size()) {
             tricks();
         }
@@ -94,6 +106,7 @@ class Controller {
 
 
     private static void tricks() {
+        System.out.println("started tricks");
 
         Port winCard = ports.get(0);
 
@@ -107,7 +120,6 @@ class Controller {
             Thread.currentThread().interrupt();
         }
 
-        System.out.println("\nTurn ended \n");
         findPlayersWinCard(winCard);
         winCard.getPlayer().playerAction();
     }
@@ -122,14 +134,15 @@ class Controller {
     }
 
     private static Player findPlayersWinCard(Port winCard) {
+        System.out.println("started findPlayerWinCard");
         for (Port p : ports) {
             if (p.getPlayer().equals(winCard.getPlayer())) {
-                System.out.println("Player " + p.getPlayer().getName() + " won cards: ");
+                System.out.println(Fonts.BLUE_BOLD + "Player " + p.getPlayer().getName() + " won cards: " + Fonts.RESET);
 
                 for (int j = 0; j < ports.size(); j++) {
                     p.getPlayer().getPreviousTricks().add(ports.get(j).getCard());
                     p.getPlayer().setScore(p.getPlayer().getScore() + ports.get(j).getCard().getValue());
-                    System.out.print(ports.get(j).getCard().getName());
+                    System.out.print(Fonts.BLUE_BOLD + ports.get(j).getCard().getName() + Fonts.RESET);
                     if (j < ports.size() - 1) {
                         System.out.print(", ");
 
@@ -166,7 +179,7 @@ class Controller {
 
     private static void announceWinner(Player winPlayer) {
         if (winPlayer.getScore() < 33) {
-            System.out.println("Player " + winPlayer.getName() + " called too early and lost the game");
+            System.out.println(Fonts.BLUE_BOLD + "Player " + winPlayer.getName() + " called too early and lost the game");
         } else {
             System.out.println("\nPlayer " + winPlayer.getName() + " wins!");
             System.out.println("Points: " + winPlayer.getScore());

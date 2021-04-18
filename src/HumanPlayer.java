@@ -6,10 +6,6 @@ public class HumanPlayer extends Player {
 
     private Scanner scanner = new Scanner(System.in);
 
-    public Player HumanPlayer() {
-        return this;
-    }
-
     private void showCardsToThrow() {
         for (int i = 0; i < cardsInHand.size(); i++) {
             printCardToThrow(i);
@@ -18,12 +14,15 @@ public class HumanPlayer extends Player {
 
     @Override
     protected void playerAction() {
+        System.out.println("started playerAction");
         playerActionOptions();
-        Controller.turnSwitcher(HumanPlayer(), playerActionExecution());
+        Card card = playerActionExecution();
+        Controller.turnSwitcher(this, card);
 
     }
 
     protected Card playerActionExecution() {
+        System.out.println("started playerActionExecution");
 
         try {
             int i = scanner.nextInt();
@@ -58,6 +57,7 @@ public class HumanPlayer extends Player {
     }
 
     private Card throwCard(int i) {
+        System.out.println("throwCard");
         i--;
         System.out.println(Fonts.GREEN_BOLD + "You threw: " + cardsInHand.get(i).getName() + Fonts.RESET);
 
@@ -67,7 +67,7 @@ public class HumanPlayer extends Player {
     }
 
     private void playerActionOptions() {
-        System.out.println(name + " is on turn");
+        System.out.println(Fonts.BLUE_BOLD + name + " is on turn" + Fonts.RESET);
 
         System.out.println("Please throw a Card or make another action");
 

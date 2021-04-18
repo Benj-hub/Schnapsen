@@ -45,7 +45,7 @@ public class Player {
             System.out.println(name + " gets Trump Card.");
             System.out.println("Trump changed to " + card.getName());
         } else {
-            System.out.println(card.getName() + " dfdoesn't match");
+            System.out.println(card.getName() + " doesn't match");
         }
 
         playerAction();

@@ -1,8 +1,6 @@
 // created by Benjamin Lamprecht
-import com.sun.org.glassfish.external.statistics.annotations.Reset;
 
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 
 public class Player {
 
@@ -11,10 +9,42 @@ public class Player {
     protected ArrayList<Card> previousTricks;
     protected ArrayList<Card> cardsInHand;
 
-    protected void playerAction(){}
+    public Player() {
+        this.score = 0;
+        this.name = "Default Player";
+        this.previousTricks = new ArrayList<>();
+        this.cardsInHand = new ArrayList<>();
+    }
 
-    protected Card playerActionExecution(){
+    protected void playerAction() {
+    }
+
+    protected Card playerActionExecution() {
         return null;
+    }
+
+    protected Card callPairs(Card card) {
+        for (Card slave : getCardsInHand()) {
+            if (cardMatchesPair(card, slave)) {
+                return card;
+            } else {
+                System.out.println("No Pairs in Deck!");
+                playerAction();
+            }
+        }
+        return null;
+    }
+
+    static boolean cardMatchesPair(Card master, Card slave) {
+        boolean cardIsKoeningOrDame = master.getValue() == 4 || master.getValue() == 3;
+        boolean slaveIsKoenigOrDame = slave.getValue() == 4 || slave.getValue() == 3;
+        boolean matchesColour = master.getColor().equals(slave.getColor());
+
+        if (cardIsKoeningOrDame && slaveIsKoenigOrDame && matchesColour) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void drawNewCard() {
@@ -66,15 +96,12 @@ public class Player {
         }
     }
 
-    public Player() {
-        this.score = 0;
-        this.name = "Default Player";
-        this.previousTricks = new ArrayList<>();
-        this.cardsInHand = new ArrayList<>();
-    }
-
     public int getScore() {
         return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public String getName() {
@@ -83,10 +110,6 @@ public class Player {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
     }
 
     public ArrayList<Card> getPreviousTricks() {

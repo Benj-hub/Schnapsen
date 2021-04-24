@@ -16,6 +16,10 @@ public class Card {
         this.color = color;
     }
 
+    public void setValue(int value) {
+        this.value = value;
+    }
+
     public String getName() {
         return name;
     }

@@ -3,8 +3,17 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class HumanPlayer extends Player {
-
     private Scanner scanner = new Scanner(System.in);
+
+    public HumanPlayer() {
+        System.out.println("Hello there!");
+        System.out.println("How do you want to be called?");
+        name = scanner.nextLine();
+        if (name.equals("")){
+        name = "General Kenobi";
+        }
+        System.out.print(name + "!, ");
+    }
 
     private void showCardsToThrow() {
         for (int i = 0; i < cardsInHand.size(); i++) {
@@ -33,12 +42,17 @@ public class HumanPlayer extends Player {
             }
             switch (i) {
                 case 6:
+                    System.out.println("Which Pairs do you got?");
+                    showCardsToThrow();
+                    i = scanner.nextInt();
+                    return callPairs(throwCard(i));
+                case 7:
                     System.out.println("Which card do you change the Trumpf with?");
                     showCardsToThrow();
                     i = scanner.nextInt();
                     changeTrumpfCard(throwCard(i));
 
-                case 7:
+                case 8:
                     if (Deck.getStapel().size() > 0) {
                         System.out.println("You blocked the Stapel");
                         Deck.blockStapel();
@@ -46,8 +60,8 @@ public class HumanPlayer extends Player {
                         System.out.println("Stapel already blocked!");
                     }
                     playerAction();
-                case 8:
-                    Controller.endingGame();
+                case 9:
+                    Controller.endingGame(this);
             }
         } catch (InputMismatchException input) {
             System.out.println("Input couldn't be read: " + input.getMessage());
@@ -73,11 +87,13 @@ public class HumanPlayer extends Player {
 
         showCardsToThrow();
 
-        System.out.println("Action 6: Change the Trumpfcard");
+        System.out.println("Action 6: Call Pairs");
+
+        System.out.println("Action 7: Change the Trumpfcard");
 
         if (Deck.getStapel().size() > 0) {
-            System.out.println("Action 7: Block the stapel");
+            System.out.println("Action 8: Block the stapel");
         }
-        System.out.println("Action 8: Bet on ending the Game and start counting!");
+        System.out.println("Action 9: Bet on ending the Game and start counting!");
     }
 }

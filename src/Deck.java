@@ -1,5 +1,7 @@
 // created by Benjamin Lamprecht
 
+import sun.awt.SunHints;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +35,7 @@ class Deck {
         }
     }
 
-    public Card trumpfChange(Card card) {
+    /*public Card trumpfChange(Card card) {
         if (this.getTrumpf().getColor().equals(card.getColor())) {
             Card temp = this.getTrumpf();
             System.out.println("Trumpf: " + this.getTrumpf().getName() + " exchanged to " + card.getName());
@@ -44,6 +46,8 @@ class Deck {
             return card;
         }
     }
+
+     */
 
     private Card trumpf(ArrayList<Card> stapel) {
         Card card = stapel.get(0);
@@ -61,8 +65,23 @@ class Deck {
 
                 ResultSet results = statement.executeQuery("SELECT * FROM Deck ORDER BY ROWID ASC");
                 while (results.next()) {
-                    Card card = new Card(results.getString("NAME"), results.getString("COLOR"), results.getInt("VALUE"));
-                    stapel.add(card);
+                    Card card = new Card(results.getString("NAME"), results.getString("COLOR"), 0);
+                    String str = results.getString("VALUE");
+                    switch (str){
+                        case "ass":
+                            card.setValue(11);
+                        case  "zehn":
+                            card.setValue(10);
+                        case  "könig":
+                            card.setValue(4);
+                        case  "dame":
+                            card.setValue(3);
+                        case  "bube":
+                            card.setValue(2);
+                    }
+                    if (card.getValue() > 0) {
+                        stapel.add(card);
+                    }
                 }
 
                 statement.close();

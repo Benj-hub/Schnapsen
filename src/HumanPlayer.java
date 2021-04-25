@@ -23,7 +23,7 @@ public class HumanPlayer extends Player {
 
     @Override
     protected void playerAction() {
-        System.out.println("started playerAction");
+        //System.out.println("started playerAction");
         playerActionOptions();
         Card card = playerActionExecution();
         Controller.turnSwitcher(this, card);
@@ -31,7 +31,7 @@ public class HumanPlayer extends Player {
     }
 
     protected Card playerActionExecution() {
-        System.out.println("started playerActionExecution");
+        //System.out.println("started playerActionExecution");
 
         try {
             int i = scanner.nextInt();
@@ -42,7 +42,7 @@ public class HumanPlayer extends Player {
             }
             switch (i) {
                 case 6:
-                    System.out.println("Which Pairs do you got?");
+                    System.out.println("Which Pairs do you have?");
                     showCardsToThrow();
                     i = scanner.nextInt();
                     return callPairs(throwCard(i));
@@ -71,7 +71,7 @@ public class HumanPlayer extends Player {
     }
 
     private Card throwCard(int i) {
-        System.out.println("throwCard");
+        //System.out.println("throwCard");
         i--;
         System.out.println(Fonts.GREEN_BOLD + "You threw: " + cardsInHand.get(i).getName() + Fonts.RESET);
 

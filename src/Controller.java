@@ -41,18 +41,18 @@ class Controller {
         } catch (InterruptedException ex) {
             System.out.println(ex.getMessage());
         }
-
         firstTurn();
     }
 
     static void turnSwitcher(Player playerFromClass, Card card) {
-        System.out.println("started turnswitcher");
+        //System.out.println("started turnswitcher");
         System.out.println(Fonts.BLUE_BOLD + "Turn ended" + Fonts.RESET);
 
         ports.add(new Port(playerFromClass, card));
+        System.out.println(Fonts.YELLOW_BOLD + "On the Table: " + Fonts.RESET);
         for (Port p :
                 ports) {
-            System.out.println(p.getCard().getName());
+            System.out.println(Fonts.YELLOW_BOLD + p.getCard().getName() + Fonts.RESET);
         }
         if (players.size() == ports.size()) {
             tricks();
@@ -70,9 +70,8 @@ class Controller {
             }
         }
     }
-
     private static void tricks() {
-        System.out.println("started tricks");
+        //System.out.println("started tricks");
 
         Port winCard = checkWinCard();
 
@@ -96,15 +95,15 @@ class Controller {
     }
 
     private static Player findPlayersWinCard(Port winCard) {
-        System.out.println("started findPlayerWinCard");
+        //System.out.println("started findPlayerWinCard");
         for (Port p : ports) {
             if (p.getPlayer().equals(winCard.getPlayer())) {
-                System.out.println(Fonts.BLUE_BOLD + "Player " + p.getPlayer().getName() + " won cards: " + Fonts.RESET);
+                System.out.println(Fonts.RED_BOLD + "Player " + p.getPlayer().getName() + " won cards: " + Fonts.RESET);
 
                 for (int j = 0; j < ports.size(); j++) {
                     p.getPlayer().getPreviousTricks().add(ports.get(j).getCard());
                     p.getPlayer().setScore(p.getPlayer().getScore() + ports.get(j).getCard().getValue());
-                    System.out.print(Fonts.BLUE_BOLD + ports.get(j).getCard().getName() + Fonts.RESET);
+                    System.out.print(Fonts.RED_BOLD + ports.get(j).getCard().getName() + Fonts.RESET);
                     if (j < ports.size() - 1) {
                         System.out.print(", ");
 
@@ -150,8 +149,14 @@ class Controller {
         if (winPlayer.getScore() < 33) {
             System.out.println(Fonts.BLUE_BOLD + "Player " + winPlayer.getName() + " called too early and lost the game");
         } else {
-            System.out.println("\nPlayer " + winPlayer.getName() + " wins!");
-            System.out.println("Points: " + winPlayer.getScore());
+            System.out.println(Fonts.PURPLE_BOLD + "\nPlayer " + winPlayer.getName() + " wins!");
+            System.out.println("Points: " + winPlayer.getScore() + Fonts.RESET);
+        }
+        System.out.println("Others score(s):");
+        for (Player p : players) {
+            if (!p.getName().equals(winPlayer.getName())){
+                System.out.println(Fonts.BLACK_BOLD + p.getName() + ", score: " + p.getScore() + Fonts.RESET);
+            }
         }
     }
 

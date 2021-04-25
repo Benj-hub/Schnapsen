@@ -31,7 +31,7 @@ public class NPC extends Player {
     }
 
     public void lookForPairs() {
-        System.out.println("requesting lookforpairs");
+        //System.out.println("requesting lookforpairs");
         for (Card master : getCardsInHand()) {
             Card temp = master;
             for (Card slave : getCardsInHand()) {
@@ -71,7 +71,7 @@ public class NPC extends Player {
     }
 
     private void endingGame() {
-        System.out.println("requesting ending game");
+        //System.out.println("requesting ending game");
         if (getScore() >= 66) {
             Controller.endingGame(this);
         }
@@ -81,7 +81,7 @@ public class NPC extends Player {
     }
 
     private void blockStapel() {
-        System.out.println("requesting blockstapel");
+        //System.out.println("requesting blockstapel");
         if (66 <= (possiblePoints()) + score) {
             Deck.blockStapel();
         }

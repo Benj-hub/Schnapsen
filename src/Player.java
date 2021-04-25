@@ -26,6 +26,11 @@ public class Player {
     protected Card callPairs(Card card) {
         for (Card slave : getCardsInHand()) {
             if (cardMatchesPair(card, slave)) {
+                if (Deck.getTrumpfColor().equals(card.getColor())){
+                    score += 40;
+                } else {
+                    score += 20;
+                }
                 return card;
             } else {
                 System.out.println("No Pairs in Deck!");

@@ -131,8 +131,10 @@ class Controller {
 
     public static Port checkWinCard() {
         Port winCard = ports.get(0);
+        Port temp;
         for (Port port : ports) {
-            winCard = findBetterCard(winCard, port);
+            temp = findBetterCard(winCard, port);
+            winCard = temp;
         }
          return winCard;
     }
@@ -147,7 +149,8 @@ class Controller {
 
     private static void announceWinner(Player winPlayer) {
         if (winPlayer.getScore() < 33) {
-            System.out.println(Fonts.BLUE_BOLD + "Player " + winPlayer.getName() + " called too early and lost the game");
+            System.out.println(Fonts.BLUE_BOLD + "Player " + winPlayer.getName() + " called too early and lost the game" +
+                    '\n' + "Your Score: " + winPlayer.getScore());
         } else {
             System.out.println(Fonts.PURPLE_BOLD + "\nPlayer " + winPlayer.getName() + " wins!");
             System.out.println("Points: " + winPlayer.getScore() + Fonts.RESET);

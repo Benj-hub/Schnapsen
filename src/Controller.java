@@ -33,6 +33,10 @@ class Controller {
             System.out.println("=================================");
         }
 
+        for (Card c : Deck.getStapel()) {
+            System.out.println(c.getName());
+        }
+
 
         System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + Deck.getTrumpf().getName() + Fonts.RESET);
 
@@ -46,12 +50,14 @@ class Controller {
 
     static void turnSwitcher(Player playerFromClass, Card card) {
         //System.out.println("started turnswitcher");
+
+        //turnswitcher isn't called everytime when needed
+
         System.out.println(Fonts.BLUE_BOLD + "Turn ended" + Fonts.RESET);
 
         ports.add(new Port(playerFromClass, card));
         System.out.println(Fonts.YELLOW_BOLD + "On the Table: " + Fonts.RESET);
-        for (Port p :
-                ports) {
+        for (Port p : ports) {
             System.out.println(Fonts.YELLOW_BOLD + p.getCard().getName() + Fonts.RESET);
         }
         if (players.size() == ports.size()) {
@@ -81,8 +87,9 @@ class Controller {
             Thread.currentThread().interrupt();
         }
 
-        findPlayersWinCard(winCard);
-        winCard.getPlayer().playerAction();
+        Player temp = findPlayersWinCard(winCard);
+        ports.clear();
+        temp.playerAction();
     }
 
     public static void endingGame(Player p) {
@@ -100,9 +107,11 @@ class Controller {
             if (p.getPlayer().equals(winCard.getPlayer())) {
                 System.out.println(Fonts.RED_BOLD + "Player " + p.getPlayer().getName() + " won cards: " + Fonts.RESET);
 
+                    int newPlayerscore;
                 for (int j = 0; j < ports.size(); j++) {
                     p.getPlayer().getPreviousTricks().add(ports.get(j).getCard());
-                    p.getPlayer().setScore(p.getPlayer().getScore() + ports.get(j).getCard().getValue());
+                    newPlayerscore = p.getPlayer().getScore() + ports.get(j).getCard().getValue();
+                    p.getPlayer().setScore(newPlayerscore);
                     System.out.print(Fonts.RED_BOLD + ports.get(j).getCard().getName() + Fonts.RESET);
                     if (j < ports.size() - 1) {
                         System.out.print(", ");
@@ -111,7 +120,6 @@ class Controller {
                 }
                 System.out.println();
             }
-            ports.clear();
             return p.getPlayer();
         }
         return null;

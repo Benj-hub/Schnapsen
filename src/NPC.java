@@ -7,14 +7,14 @@ public class NPC extends Player {
     private ArrayList<Card> throwCard = new ArrayList<>();
 
     NPC(int i) {
-        name = "Machine " + i;
+        name = "Machine" + i;
     }
 
     @Override
     protected void playerAction(){
         endingGame();
         blockStapel();
-        lookForPairs();
+        callPairs();
         if (Controller.ports.size() == 0){
             Controller.turnSwitcher(this, throwFirstCard());
         } else {
@@ -22,26 +22,38 @@ public class NPC extends Player {
         }
     }
 
+    @Override
+    protected void callPairs() {
+        //System.out.println("requesting callPairs");
+        for (Card master : getCardsInHand()) {
+            for (Card slave : getCardsInHand()) {
+                if (cardMatchesPair(master, slave)) {
+                    if (slave.getValue() < master.getValue()){
+                        executePairs(slave);
+                    } else {
+                        executePairs(master);
+                    }
+                }
+            }
+        }
+    }
+
+    private void executePairs(Card card){
+        if (Deck.getTrumpfColor().equals(card.getColor())){
+            score += 40;
+            System.out.println("40 Points for Griff... *cough* " + name + "!");
+        } else {
+            score += 20;
+            System.out.println("20 Points for Griff... *cough* " + name + "!");
+        }
+        Controller.turnSwitcher(this, card);
+    }
+
     public Card throwFirstCard() {
         if (66 <= (possiblePoints()) + score) {
             return gainPointsLooseCards();
         } else {
             return gainPointsSaveCards();
-        }
-    }
-
-    public void lookForPairs() {
-        //System.out.println("requesting lookforpairs");
-        for (Card master : getCardsInHand()) {
-            Card temp = master;
-            for (Card slave : getCardsInHand()) {
-                if (Player.cardMatchesPair(master, slave)) {
-                    if (slave.getValue() < master.getValue()){
-                        temp = slave;
-                    }
-                    callPairs(temp);
-                }
-            }
         }
     }
 
@@ -57,6 +69,7 @@ public class NPC extends Player {
             throwCard.add(findScapeGoat());
         }
         Collections.shuffle(throwCard);
+        System.out.println(name + " threw: " + throwCard.get(0).getName());
         return throwCard.get(0);
     }
 
@@ -71,13 +84,14 @@ public class NPC extends Player {
     }
 
     private void endingGame() {
+        int possibleScore = score + possiblePoints();
         //System.out.println("requesting ending game");
-        if (getScore() >= 66) {
+        if (getScore() > 65) {
             Controller.endingGame(this);
         }
-        if (score >= 33 && (score + possiblePoints()) < 66) {
-            Controller.endingGame(this);
-        }
+       // if (score > 32 && possibleScore < 66) {
+       //     Controller.endingGame(this);
+       // }
     }
 
     private void blockStapel() {
@@ -89,17 +103,21 @@ public class NPC extends Player {
 
     private ArrayList<Card> thrownCards() {
         for (Port port : Controller.ports) {
-            thrownCards().add(port.getCard());
+            thrownCards.add(port.getCard());
         }
         return thrownCards;
     }
 
     private int possiblePoints() {
         int possiblePoints = 0;
-        for (Card c : cardsInHand) {
-            if (c.getValue() >= 10) {
-                possiblePoints += (c.getValue() + 2);
+        int thrownpoints = 0;
+
+        for (Card c : thrownCards()) {
+            if (c.getValue() > 9) {
+                thrownpoints += c.getValue();
             }
+                possiblePoints = 108 - thrownpoints;
+
         }
         return possiblePoints;
     }

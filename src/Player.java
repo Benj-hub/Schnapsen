@@ -1,8 +1,9 @@
 // created by Benjamin Lamprecht
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
-public class Player {
+public abstract class Player {
 
     protected int score;
     protected String name;
@@ -23,22 +24,7 @@ public class Player {
         return null;
     }
 
-    protected Card callPairs(Card card) {
-        for (Card slave : getCardsInHand()) {
-            if (cardMatchesPair(card, slave)) {
-                if (Deck.getTrumpfColor().equals(card.getColor())){
-                    score += 40;
-                } else {
-                    score += 20;
-                }
-                return card;
-            } else {
-                System.out.println("No Pairs in Deck!");
-                playerAction();
-            }
-        }
-        return null;
-    }
+    protected abstract void callPairs();
 
     static boolean cardMatchesPair(Card master, Card slave) {
         boolean cardIsKoeningOrDame = master.getValue() == 4 || master.getValue() == 3;

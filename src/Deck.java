@@ -70,14 +70,22 @@ class Deck {
                     switch (str){
                         case "ass":
                             card.setValue(11);
+                            break;
                         case  "zehn":
                             card.setValue(10);
+                            break;
                         case  "könig":
                             card.setValue(4);
+                            break;
                         case  "dame":
                             card.setValue(3);
+                            break;
                         case  "bube":
                             card.setValue(2);
+                            break;
+                        default:
+                            card.setValue(0);
+                            break;
                     }
                     if (card.getValue() > 0) {
                         stapel.add(card);

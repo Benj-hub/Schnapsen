@@ -42,10 +42,7 @@ public class HumanPlayer extends Player {
             }
             switch (i) {
                 case 6:
-                    System.out.println("Which Pairs do you have?");
-                    showCardsToThrow();
-                    i = scanner.nextInt();
-                    return callPairs(throwCard(i));
+                    callPairs();
                 case 7:
                     System.out.println("Which card do you change the Trumpf with?");
                     showCardsToThrow();
@@ -54,7 +51,7 @@ public class HumanPlayer extends Player {
 
                 case 8:
                     if (Deck.getStapel().size() > 0) {
-                        System.out.println("You blocked the Stapel");
+                        System.out.println(name + " blocked the Stapel");
                         Deck.blockStapel();
                     } else {
                         System.out.println("Stapel already blocked!");
@@ -70,10 +67,48 @@ public class HumanPlayer extends Player {
         return null;
     }
 
+    @Override
+    protected void callPairs() {
+        System.out.println("Show me what you got!");
+
+        showCardsToThrow();
+        int m = scanner.nextInt();
+        Card master = cardsInHand.get(m);
+        System.out.println("...and?");
+        int s = scanner.nextInt();
+        Card slave = cardsInHand.get(s);
+
+        if (checkPair(master, slave)) {
+            if (master.getValue()<slave.getValue()) {
+                throwCard(m);
+            } else {
+                throwCard(s);
+            }
+        } else {
+            System.out.println("No Pairs in Deck!");
+            playerAction();
+        }
+
+    }
+
+    private boolean checkPair(Card master, Card slave) {
+        if (cardMatchesPair(master, slave)) {
+            if (Deck.getTrumpfColor().equals(master.getColor())){
+                score += 40;
+                System.out.println("40 Points for Griff... *cough* " + name + "!");
+            } else {
+                score += 20;
+                System.out.println("20 Points for Griff... *cough* " + name + "!");
+            }
+            return true;
+        }
+        return false;
+    }
+
     private Card throwCard(int i) {
         //System.out.println("throwCard");
         i--;
-        System.out.println(Fonts.GREEN_BOLD + "You threw: " + cardsInHand.get(i).getName() + Fonts.RESET);
+        System.out.println(Fonts.GREEN_BOLD + name + " threw: " + cardsInHand.get(i).getName() + Fonts.RESET);
 
         Card temp = cardsInHand.get(i);
         cardsInHand.remove(cardsInHand.get(i));

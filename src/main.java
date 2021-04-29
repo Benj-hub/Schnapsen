@@ -8,5 +8,17 @@ public class main {
 
         Controller controller = new Controller();
 
+        while (Controller.isGameRuns()) {
+            Player player = Controller.getPlayers().get(0);
+            while (Controller.getPlayers().size() > Controller.getPorts().size()) {
+                assert player != null;
+                Controller.getPorts().add(player.playerAction());
+                player = Controller.turnSwitcher(player);
+                Controller.printCardsOnTable();
+            }
+            player = Controller.tricks();
+            Controller.addScore(player);
+            Controller.getPorts().clear();
+        }
     }
 }

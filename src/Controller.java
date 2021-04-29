@@ -10,74 +10,80 @@ class Controller {
     static ArrayList<Port> ports = new ArrayList<>();
     //collecting players
     private static ArrayList<Player> players = new ArrayList<>();
+    private static boolean gameRuns = true;
+
+    public static boolean isGameRuns() {
+        return gameRuns;
+    }
+
+    public static ArrayList<Port> getPorts() {
+        return ports;
+    }
+
+    public static ArrayList<Player> getPlayers() {
+        return players;
+    }
 
     Controller() {
-
         System.out.println("What's your name?");
-
         //creation of Player1
         Player p1 = new HumanPlayer();
         players.add(p1);
-
         createOtherPlayer();
-
         dealCards();
 
         for (Player player :
                 players) {
             System.out.println(player.getName());
-            for (Card c :
-                    player.getCardsInHand()) {
+            for (Card c : player.getCardsInHand()) {
                 System.out.println(c.getName());
             }
             System.out.println("=================================");
         }
-
         for (Card c : Deck.getStapel()) {
             System.out.println(c.getName());
         }
-
-
         System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + Deck.getTrumpf().getName() + Fonts.RESET);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            System.out.println(ex.getMessage());
-        }
-        firstTurn();
     }
 
-    static void turnSwitcher(Player playerFromClass, Card card) {
-        //System.out.println("started turnswitcher");
+    private static void gameRuns(){
+        gameRuns = false;
+    }
 
-        //turnswitcher isn't called everytime when needed
+    static void addScore(Player player){
+        int newScore = 0;
+        for (Port p : ports) {
+            newScore += p.getCard().getValue();
+        }
+        player.setScore(newScore);
+    }
 
-        System.out.println(Fonts.BLUE_BOLD + "Turn ended" + Fonts.RESET);
-
-        ports.add(new Port(playerFromClass, card));
+    static void printCardsOnTable() {
         System.out.println(Fonts.YELLOW_BOLD + "On the Table: " + Fonts.RESET);
         for (Port p : ports) {
             System.out.println(Fonts.YELLOW_BOLD + p.getCard().getName() + Fonts.RESET);
         }
-        if (players.size() == ports.size()) {
-            tricks();
-        }
-
-        for (Player p : players) {
-            for (int i = 0; i < ports.size(); i++) {
-                if (p.equals(ports.get(i).getPlayer())) {
-                    if (i < players.size()) {
-                        players.get(i + 1).playerAction();
-                    } else {
-                        players.get(0).playerAction();
+    }
+    static Player turnSwitcher(Player player) {
+        System.out.println("started turnswitcher");
+        System.out.println(Fonts.BLUE_BOLD + "Turn ended" + Fonts.RESET);
+        int i = 1;
+        if (ports.size() > 0) {
+            for (Player p : players) {
+                    if (p.equals(ports.get(ports.size()-1).getPlayer())) {
+                        if (i < players.size()) {
+                            return players.get(i);
+                        } else {
+                            return players.get(0);
+                        }
                     }
-                }
+                    i++;
             }
         }
+        return player;
     }
-    private static void tricks() {
-        //System.out.println("started tricks");
+    static Player tricks() {
+        System.out.println("started tricks");
 
         Port winCard = checkWinCard();
 
@@ -89,20 +95,20 @@ class Controller {
 
         Player temp = findPlayersWinCard(winCard);
         ports.clear();
-        temp.playerAction();
+        return temp;
     }
 
     public static void endingGame(Player p) {
+        gameRuns();
         Player winPlayer = p;
         for (Player temp : players) {
             winPlayer = searchWinner(temp, winPlayer);
         }
         announceWinner(winPlayer);
-        System.exit(0);
     }
 
     private static Player findPlayersWinCard(Port winCard) {
-        //System.out.println("started findPlayerWinCard");
+        System.out.println("started findPlayerWinCard");
         for (Port p : ports) {
             if (p.getPlayer().equals(winCard.getPlayer())) {
                 System.out.println(Fonts.RED_BOLD + "Player " + p.getPlayer().getName() + " won cards: " + Fonts.RESET);
@@ -125,7 +131,7 @@ class Controller {
         return null;
     }
 
-    public static Port findBetterCard(Port master, Port slave) {
+    private static Port findBetterCard(Port master, Port slave) {
         boolean checkIfSlaveIsHigher = slave.getCard().getValue() > master.getCard().getValue();
         boolean checkIfSlaveMatchescolour = slave.getCard().getColor().equals(master.getCard().getColor());
         boolean checkIfSlaveIsTrumpf = slave.getCard().getColor().equals(Deck.getTrumpfColor());
@@ -137,7 +143,7 @@ class Controller {
         return master;
     }
 
-    public static Port checkWinCard() {
+    static Port checkWinCard() {
         Port winCard = ports.get(0);
         Port temp;
         for (Port port : ports) {
@@ -171,14 +177,14 @@ class Controller {
         }
     }
 
-    public static Boolean checkColour(Card card) {
+    static Boolean checkColour(Card card) {
         boolean checkIfCardmatchescolour = card.getColor().equals(ports.get(0).getCard().getColor());
         boolean checkIfCardIsTrumpf = card.getColor().equals(Deck.getTrumpfColor());
 
         return checkIfCardIsTrumpf || checkIfCardmatchescolour;
     }
 
-    public static void createOtherPlayer() {
+    private static void createOtherPlayer() {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("how many players do you want to play against?");
@@ -199,6 +205,7 @@ class Controller {
                 players.add(new NPC(i + 1));
             }
         }
+        Collections.shuffle(players);
     }
 
     private void dealCards() {
@@ -217,11 +224,5 @@ class Controller {
                 p.setCardsInHand(tempHand);
             }
         }
-    }
-
-    private void firstTurn() {
-        Collections.shuffle(players);
-        System.out.println();
-        players.get(0).playerAction();
     }
 }

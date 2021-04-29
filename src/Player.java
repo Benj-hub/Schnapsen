@@ -17,25 +17,18 @@ public abstract class Player {
         this.cardsInHand = new ArrayList<>();
     }
 
-    protected void playerAction() {
-    }
+    protected abstract Port playerAction();
 
-    protected Card playerActionExecution() {
-        return null;
-    }
+    protected abstract Card playerActionExecution();
 
-    protected abstract void callPairs();
+    protected abstract Card callPairs();
 
-    static boolean cardMatchesPair(Card master, Card slave) {
+    protected boolean cardMatchesPair(Card master, Card slave) {
         boolean cardIsKoeningOrDame = master.getValue() == 4 || master.getValue() == 3;
         boolean slaveIsKoenigOrDame = slave.getValue() == 4 || slave.getValue() == 3;
         boolean matchesColour = master.getColor().equals(slave.getColor());
 
-        if (cardIsKoeningOrDame && slaveIsKoenigOrDame && matchesColour) {
-            return true;
-        } else {
-            return false;
-        }
+        return cardIsKoeningOrDame && slaveIsKoenigOrDame && matchesColour;
     }
 
     private void drawNewCard() {

@@ -22,16 +22,14 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    protected void playerAction() {
-        //System.out.println("started playerAction");
+    protected Port playerAction() {
+        System.out.println("started playerAction");
         playerActionOptions();
-        Card card = playerActionExecution();
-        Controller.turnSwitcher(this, card);
-
-    }
+        return new Port(this, playerActionExecution());
+        }
 
     protected Card playerActionExecution() {
-        //System.out.println("started playerActionExecution");
+        System.out.println("started playerActionExecution");
 
         try {
             int i = scanner.nextInt();
@@ -59,6 +57,8 @@ public class HumanPlayer extends Player {
                     playerAction();
                 case 9:
                     Controller.endingGame(this);
+                default:
+                    playerAction();
             }
         } catch (InputMismatchException input) {
             System.out.println("Input couldn't be read: " + input.getMessage());
@@ -68,7 +68,7 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    protected void callPairs() {
+    protected Card callPairs() {
         System.out.println("Show me what you got!");
 
         showCardsToThrow();
@@ -80,15 +80,15 @@ public class HumanPlayer extends Player {
 
         if (checkPair(master, slave)) {
             if (master.getValue()<slave.getValue()) {
-                throwCard(m);
+                return master;
             } else {
-                throwCard(s);
+                return slave;
             }
         } else {
             System.out.println("No Pairs in Deck!");
             playerAction();
         }
-
+        return null;
     }
 
     private boolean checkPair(Card master, Card slave) {

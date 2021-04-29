@@ -11,31 +11,44 @@ public class NPC extends Player {
     }
 
     @Override
-    protected void playerAction(){
+    protected Port playerAction(){
         endingGame();
         blockStapel();
-        callPairs();
-        if (Controller.ports.size() == 0){
-            Controller.turnSwitcher(this, throwFirstCard());
+        Card pairs = callPairs();
+        if (pairs != null){
+            return new Port(this, pairs);
+        } else if (Controller.ports.size() < 1){
+            return new Port(this, throwFirstCard());
         } else {
-            Controller.turnSwitcher(this, throwAnswer());
+            return new Port(this, throwAnswer());
         }
     }
 
     @Override
-    protected void callPairs() {
-        //System.out.println("requesting callPairs");
+    protected Card playerActionExecution() {
+        return null;
+    }
+
+    @Override
+    protected Card callPairs() {
+        System.out.println(Fonts.RED_BOLD + "requesting callPairs" + Fonts.RESET);
         for (Card master : getCardsInHand()) {
+            System.out.println("searching master");
             for (Card slave : getCardsInHand()) {
+                System.out.println("searching slave");
                 if (cardMatchesPair(master, slave)) {
+                    System.out.println("checking match");
                     if (slave.getValue() < master.getValue()){
-                        executePairs(slave);
+                        System.out.println("if slave is smaller");
+                        return slave;
                     } else {
-                        executePairs(master);
+                        System.out.println("if master is smaller");
+                        return master;
                     }
                 }
             }
         }
+        return null;
     }
 
     private void executePairs(Card card){
@@ -46,7 +59,6 @@ public class NPC extends Player {
             score += 20;
             System.out.println("20 Points for Griff... *cough* " + name + "!");
         }
-        Controller.turnSwitcher(this, card);
     }
 
     public Card throwFirstCard() {
@@ -84,18 +96,14 @@ public class NPC extends Player {
     }
 
     private void endingGame() {
-        int possibleScore = score + possiblePoints();
-        //System.out.println("requesting ending game");
+        System.out.println("requesting ending game");
         if (getScore() > 65) {
             Controller.endingGame(this);
         }
-       // if (score > 32 && possibleScore < 66) {
-       //     Controller.endingGame(this);
-       // }
     }
 
     private void blockStapel() {
-        //System.out.println("requesting blockstapel");
+        System.out.println("requesting blockstapel");
         if (66 <= (possiblePoints()) + score) {
             Deck.blockStapel();
         }

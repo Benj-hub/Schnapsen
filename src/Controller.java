@@ -189,13 +189,13 @@ class Controller {
 
         System.out.println("how many players do you want to play against?");
 
-        int anzahlSpieler = scanner.nextInt();
+        int anzahlSpieler = 1; //scanner.nextInt();
         for (int i = 0; i < anzahlSpieler; i++) {
             System.out.println("Is Player" + (i + 2) + " another Human or a Machine?");
             System.out.println("write: human");
             System.out.println("write: machine");
 
-            String otherPlayer = scanner.next();
+            String otherPlayer = "machine";//scanner.next();
 
             if (otherPlayer.equals("human")) {
 

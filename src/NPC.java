@@ -16,6 +16,7 @@ public class NPC extends Player {
         blockStapel();
         Card pairs = callPairs();
         if (pairs != null){
+            executePairs(pairs);
             return new Port(this, pairs);
         } else if (Controller.ports.size() < 1){
             return new Port(this, throwFirstCard());
@@ -33,16 +34,15 @@ public class NPC extends Player {
     protected Card callPairs() {
         System.out.println(Fonts.RED_BOLD + "requesting callPairs" + Fonts.RESET);
         for (Card master : getCardsInHand()) {
-            System.out.println("searching master");
             for (Card slave : getCardsInHand()) {
-                System.out.println("searching slave");
                 if (cardMatchesPair(master, slave)) {
                     System.out.println("checking match");
+                    System.out.println(master.getName() + ", " + slave.getName());
                     if (slave.getValue() < master.getValue()){
-                        System.out.println("if slave is smaller");
+                        System.out.println("slave is smaller");
                         return slave;
                     } else {
-                        System.out.println("if master is smaller");
+                        System.out.println("master is smaller");
                         return master;
                     }
                 }

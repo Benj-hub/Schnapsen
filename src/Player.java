@@ -27,8 +27,9 @@ public abstract class Player {
         boolean cardIsKoeningOrDame = master.getValue() == 4 || master.getValue() == 3;
         boolean slaveIsKoenigOrDame = slave.getValue() == 4 || slave.getValue() == 3;
         boolean matchesColour = master.getColor().equals(slave.getColor());
+        boolean isDifferentCard = !master.equals(slave);
 
-        return cardIsKoeningOrDame && slaveIsKoenigOrDame && matchesColour;
+        return cardIsKoeningOrDame && slaveIsKoenigOrDame && matchesColour && isDifferentCard;
     }
 
     private void drawNewCard() {

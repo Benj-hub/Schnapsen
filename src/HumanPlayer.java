@@ -72,7 +72,7 @@ public class HumanPlayer extends Player {
         System.out.println("Show me what you got!");
 
         showCardsToThrow();
-        int m = scanner.nextInt();
+        int m = scanner.nextInt()-1;
         Card master = cardsInHand.get(m);
         System.out.println("...and?");
         int s = scanner.nextInt();

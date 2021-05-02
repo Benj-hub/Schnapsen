@@ -6,29 +6,12 @@ import java.util.Scanner;
 
 class Controller {
 
-    private Deck deck;
-
-    public Deck getDeck() {
-        return deck;
-    }
-
     //Input for tricks
-     ArrayList<Port> ports = new ArrayList<>();
+    ArrayList<Port> ports = new ArrayList<>();
+    private Deck deck;
     //collecting players
     private ArrayList<Player> players = new ArrayList<>();
     private boolean gameRuns = true;
-
-    public boolean isGameRuns() {
-        return gameRuns;
-    }
-
-    public ArrayList<Port> getPorts() {
-        return ports;
-    }
-
-    public ArrayList<Player> getPlayers() {
-        return players;
-    }
 
     Controller() {
 
@@ -54,11 +37,27 @@ class Controller {
         System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + Deck.getTrumpf().getName() + Fonts.RESET);
     }
 
-    private void gameRuns(){
-        gameRuns = false;
+    public Deck getDeck() {
+        return deck;
     }
 
-    void addScore(Player player){
+    public boolean isGameRuns() {
+        return gameRuns;
+    }
+
+    public ArrayList<Port> getPorts() {
+        return ports;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    private boolean gameRuns() {
+        return this.gameRuns = false;
+    }
+
+    void addScore(Player player) {
         int newScore = 0;
         for (Port p : ports) {
             newScore += p.getCard().getValue();
@@ -72,6 +71,7 @@ class Controller {
             System.out.println(Fonts.YELLOW_BOLD + p.getCard().getName() + Fonts.RESET);
         }
     }
+
     Player turnSwitcher(Player player) {
         System.out.println("started turnswitcher");
         System.out.println(Fonts.BLUE_BOLD + "Turn ended" + Fonts.RESET);
@@ -79,30 +79,38 @@ class Controller {
         int i = 1;
         if (ports.size() > 0) {
             for (Player p : players) {
-                    if (p.equals(ports.get(ports.size()-1).getPlayer())) {
-                        if (i < players.size()) {
-                            return players.get(i);
-                        } else {
-                            return players.get(0);
-                        }
+                if (p.equals(ports.get(ports.size() - 1).getPlayer())) {
+                    if (i < players.size()) {
+                        return players.get(i);
+                    } else {
+                        return players.get(0);
                     }
-                    i++;
+                }
+                i++;
             }
         }
         return player;
     }
+
     Player tricks() {
-        System.out.println("started tricks");
-        Port winCard = checkWinCard();
+        System.out.println(Fonts.RED_BOLD + "started tricks" + Fonts.RESET);
+        Port temp;
+        Port winCard = ports.get(0);
+        for (Port port : ports) {
+            temp = conditionsToTrickCard(winCard, port);
+            winCard = temp;
+        }
+
 
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-
-        Player temp = findPlayersWinCard(winCard);
-        return temp;
+        System.out.println(winCard.getCard().getName());
+        System.out.println(Fonts.RED_BOLD + winCard.getPlayer().getName() + " won cards: " + Fonts.RESET);
+        printCardsOnTable();
+        return winCard.getPlayer();
     }
 
     public void endingGame(Player p) {
@@ -114,31 +122,7 @@ class Controller {
         announceWinner(winPlayer);
     }
 
-    private Player findPlayersWinCard(Port winCard) {
-        System.out.println("started findPlayerWinCard");
-        for (Port p : ports) {
-            if (p.getPlayer().equals(winCard.getPlayer())) {
-                System.out.println(Fonts.RED_BOLD + "Player " + p.getPlayer().getName() + " won cards: " + Fonts.RESET);
-
-                    int newPlayerscore;
-                for (int j = 0; j < ports.size(); j++) {
-                    p.getPlayer().getPreviousTricks().add(ports.get(j).getCard());
-                    newPlayerscore = p.getPlayer().getScore() + ports.get(j).getCard().getValue();
-                    p.getPlayer().setScore(newPlayerscore);
-                    System.out.print(Fonts.RED_BOLD + ports.get(j).getCard().getName() + Fonts.RESET);
-                    if (j < ports.size() - 1) {
-                        System.out.print(", ");
-
-                    }
-                }
-                System.out.println();
-            }
-            return p.getPlayer();
-        }
-        return null;
-    }
-
-    private Port findBetterCard(Port master, Port slave) {
+    private Port conditionsToTrickCard(Port master, Port slave) {
         boolean checkIfSlaveIsHigher = slave.getCard().getValue() > master.getCard().getValue();
         boolean checkIfSlaveMatchescolour = slave.getCard().getColor().equals(master.getCard().getColor());
         boolean checkIfSlaveIsTrumpf = slave.getCard().getColor().equals(Deck.getTrumpfColor());
@@ -148,16 +132,6 @@ class Controller {
             master = slave;
         }
         return master;
-    }
-
-    Port checkWinCard() {
-        Port winCard = ports.get(0);
-        Port temp;
-        for (Port port : ports) {
-            temp = findBetterCard(winCard, port);
-            winCard = temp;
-        }
-         return winCard;
     }
 
     private Player searchWinner(Player p, Player winPlayer) {
@@ -178,7 +152,7 @@ class Controller {
         }
         System.out.println("Others score(s):");
         for (Player p : players) {
-            if (!p.getName().equals(winPlayer.getName())){
+            if (!p.getName().equals(winPlayer.getName())) {
                 System.out.println(Fonts.BLACK_BOLD + p.getName() + ", score: " + p.getScore() + Fonts.RESET);
             }
         }

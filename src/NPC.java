@@ -13,12 +13,12 @@ public class NPC extends Player {
 
     @Override
     protected Port playerAction(){
-        endingGame();
-        blockStapel();
-        Port temp;
+       Port cardOutput;
 
         //checking if NPC is on turn
         if (controller.ports.size() == 0) {
+            endingGame();
+            blockStapel();
             //check if NPC should change Trumpf
             Card card = lookToChangeTrumpCard();
             if (card != null){
@@ -27,15 +27,15 @@ public class NPC extends Player {
             Card pairs = callPairs();
             if (pairs != null){
                 executePairs(pairs);
-                temp = new Port(this, throwCard(pairs));
+                cardOutput = new Port(this, throwCard(pairs));
             } else {
-                temp = new Port(this, throwCard(throwFirstCard()));
+                cardOutput = new Port(this, throwCard(throwFirstCard()));
             }
         } else {
-            temp = new Port(this, throwAnswer());
+            cardOutput = new Port(this, throwAnswer());
         }
         drawCard();
-        return temp;
+        return cardOutput;
     }
 
     private Card lookToChangeTrumpCard(){
@@ -99,11 +99,10 @@ public class NPC extends Player {
     }
 
     public Card throwAnswer() {
-        Port master = controller.getPorts().get(0);
+        Card master = controller.getPorts().get(0).getCard();
         for (Card card : getCardsInHand()) {
-            Port slave = new Port(this, card);
             if (conditionsToTrickCard(card)) {
-                throwCard.add(slave.getCard());
+                throwCard.add(card);
             }
         }
         if (throwCard.isEmpty()) {
@@ -114,10 +113,11 @@ public class NPC extends Player {
     }
 
     private boolean conditionsToTrickCard(Card card){
+        boolean cardIsSameColour = controller.getPorts().get(0).getCard().getColor().equals(card.getColor());
         boolean cardIsHigher = controller.getPorts().get(0).getCard().getValue() < card.getValue();
         boolean cardIsTrump = card.getColor().equals(Deck.getTrumpfColor());
 
-        return cardIsHigher && cardIsTrump;
+        return cardIsSameColour && cardIsHigher && cardIsTrump;
     }
 
     private Card findScapeGoat() {

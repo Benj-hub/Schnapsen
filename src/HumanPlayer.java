@@ -38,6 +38,9 @@ public class HumanPlayer extends Player {
             if (i < 6) {
                 drawCard();
                 return throwCard(i);
+            } else if (controller.ports.size() != 0) {
+                System.out.println("You have to deal to make that action!");
+                playerAction();
             }
             switch (i) {
                 case 6:
@@ -46,44 +49,28 @@ public class HumanPlayer extends Player {
                         if (temp != null) {
                             return throwCard(temp);
                         }
-                    } else {
-                        System.out.println("You cannot call pairs if you aren't dealing!");
                     }
-                    playerAction();
-
 
                 case 7:
-                    if (controller.ports.size() == 0) {
                         System.out.println("Which card do you change the Trumpf with?");
                         showCardsToThrow();
                         i = scanner.nextInt();
-                        changeTrumpfCard(getCardsInHand().get(i));
-                    } else {
-                        System.out.println("You have to deal to make that action!");
-                        playerAction();
-                    }
+                        changeTrumpfCard(getCardsInHand().get(i-1));
+                        break;
                 case 8:
-                    if (controller.ports.size() == 0) {
                         if (Deck.getStapel().size() > 0) {
                             System.out.println(name + " blocked the Stapel");
                             Deck.blockStapel();
                         } else {
                             System.out.println("Stapel already blocked!");
-                        }
-                    } else {
-                        System.out.println("You have to deal to make that action!");
-                    }
-                    playerAction();
+                        } playerActionExecution();
                 case 9:
-                    if (controller.ports.size() == 0) {
                         controller.endingGame(this);
-                    } else {
-                        System.out.println("You have to deal to make that action!");
-                    }
-                    playerAction();
+                        break;
                 default:
-                    playerAction();
+                    playerActionExecution();
             }
+            playerActionExecution();
         } catch (InputMismatchException input) {
             System.out.println("Input couldn't be read: " + input.getMessage());
             playerActionExecution();
@@ -110,7 +97,7 @@ public class HumanPlayer extends Player {
             }
         } else {
             System.out.println("No Pairs in Deck!");
-            playerAction();
+            playerActionExecution();
         }
         return null;
     }

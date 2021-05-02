@@ -37,6 +37,15 @@ class Controller {
         System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + Deck.getTrumpf().getName() + Fonts.RESET);
     }
 
+    protected boolean isNoCardsInHand(){
+        for (Player p : players) {
+            if (p.getCardsInHand().size() == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Deck getDeck() {
         return deck;
     }
@@ -53,14 +62,14 @@ class Controller {
         return players;
     }
 
-    private boolean gameRuns() {
+    protected boolean gameRuns() {
         return this.gameRuns = false;
     }
 
     void addScore(Player player) {
-        int newScore = 0;
+        int newScore = player.getScore();
         for (Port p : ports) {
-            newScore += p.getCard().getValue();
+            newScore = newScore + p.getCard().getValue();
         }
         player.setScore(newScore);
     }
@@ -101,7 +110,6 @@ class Controller {
             winCard = temp;
         }
 
-
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ex) {
@@ -113,6 +121,12 @@ class Controller {
         return winCard.getPlayer();
     }
 
+    protected void printPlayerscore(){
+        for (Player p : players) {
+            System.out.println(p.getName() + ": " + p.getScore());
+        }
+    }
+
     public void endingGame(Player p) {
         gameRuns();
         Player winPlayer = p;
@@ -120,6 +134,7 @@ class Controller {
             winPlayer = searchWinner(temp, winPlayer);
         }
         announceWinner(winPlayer);
+        System.exit(0);
     }
 
     private Port conditionsToTrickCard(Port master, Port slave) {

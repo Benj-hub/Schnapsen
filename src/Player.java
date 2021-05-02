@@ -33,7 +33,7 @@ public abstract class Player {
         System.out.println(Fonts.GREEN_BOLD + name + " threw: " + cardsInHand.get(i).getName() + Fonts.RESET);
 
         Card temp = cardsInHand.get(i);
-        cardsInHand.remove(cardsInHand.get(i));
+        cardsInHand.remove(temp);
         return temp;
     }
 
@@ -76,9 +76,10 @@ public abstract class Player {
     }
 
     protected void changeTrumpfCard(Card card) {
-        if (card.getColor().equals(controller.getDeck().getTrumpf().getColor())) {
+        if (card.getColor().equals(controller.getDeck().getTrumpf().getColor()) && card.getValue() == 2) {
             cardsInHand.add(Deck.getTrumpf());
             Deck.setTrumpf(card);
+            getCardsInHand().remove(card);
             System.out.println(name + " gets Trump Card.");
             System.out.println("Trump changed to " + card.getName());
         } else {

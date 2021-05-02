@@ -32,17 +32,19 @@ public class NPC extends Player {
                 cardOutput = new Port(this, throwCard(throwFirstCard()));
             }
         } else {
-            cardOutput = new Port(this, throwAnswer());
+            cardOutput = new Port(this, throwCard(throwAnswer()));
         }
         drawCard();
         return cardOutput;
     }
 
     private Card lookToChangeTrumpCard(){
+        if (Deck.getTrumpf() != null){
         for (Card c:getCardsInHand()) {
             if (conditionsToChangeTrumpCard(c)) {
                 return c;
             }
+        }
         }
         return null;
     }

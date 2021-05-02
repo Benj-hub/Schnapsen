@@ -1,7 +1,6 @@
 // created by Benjamin Lamprecht
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public abstract class Player {
 
@@ -9,8 +8,13 @@ public abstract class Player {
     protected String name;
     protected ArrayList<Card> previousTricks;
     protected ArrayList<Card> cardsInHand;
+    protected Controller controller;
 
-    public Player() {
+
+    public Player(Controller controller) {
+
+        this.controller = controller;
+
         this.score = 0;
         this.name = "Default Player";
         this.previousTricks = new ArrayList<>();
@@ -22,6 +26,24 @@ public abstract class Player {
     protected abstract Card playerActionExecution();
 
     protected abstract Card callPairs();
+
+    protected Card throwCard(int i) {
+        //System.out.println("throwCard");
+        i--;
+        System.out.println(Fonts.GREEN_BOLD + name + " threw: " + cardsInHand.get(i).getName() + Fonts.RESET);
+
+        Card temp = cardsInHand.get(i);
+        cardsInHand.remove(cardsInHand.get(i));
+        return temp;
+    }
+
+    protected Card throwCard(Card card) {
+        System.out.println(Fonts.GREEN_BOLD + name + " threw: " + card.getName() + Fonts.RESET);
+
+        Card temp = card;
+        cardsInHand.remove(card);
+        return temp;
+    }
 
     protected boolean cardMatchesPair(Card master, Card slave) {
         boolean cardIsKoeningOrDame = master.getValue() == 4 || master.getValue() == 3;
@@ -54,7 +76,7 @@ public abstract class Player {
     }
 
     protected void changeTrumpfCard(Card card) {
-        if (card.getColor().equals(Deck.getTrumpf().getColor())) {
+        if (card.getColor().equals(controller.getDeck().getTrumpf().getColor())) {
             cardsInHand.add(Deck.getTrumpf());
             Deck.setTrumpf(card);
             System.out.println(name + " gets Trump Card.");
@@ -62,7 +84,6 @@ public abstract class Player {
         } else {
             System.out.println(card.getName() + " doesn't match");
         }
-
         playerAction();
     }
 
@@ -70,8 +91,8 @@ public abstract class Player {
 
         int action = i + 1;
 
-        if (Controller.ports.size() > 0) {
-            if (Controller.checkColour(cardsInHand.get(i))) {
+        if (controller.ports.size() > 0) {
+            if (controller.checkColour(cardsInHand.get(i))) {
                 System.out.println(Fonts.BLACK_BOLD + "Action " + (action) + ": Throw " + cardsInHand.get(i).getName() + Fonts.RESET);
             } else {
                 System.out.println("Action " + (action) + ": Throw " + cardsInHand.get(i).getName());

@@ -1,13 +1,14 @@
-import java.sql.Connection;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class HumanPlayer extends Player {
     private Scanner scanner = new Scanner(System.in);
 
-    public HumanPlayer() {
+    public HumanPlayer(Controller controller) {
+        super(controller);
+
         System.out.println("Hello there!");
-        System.out.println("How do you want to be called?");
+        System.out.println("name: ");
         name = scanner.nextLine();
         if (name.equals("")){
         name = "General Kenobi";
@@ -40,12 +41,19 @@ public class HumanPlayer extends Player {
             }
             switch (i) {
                 case 6:
-                    callPairs();
+                    if (controller.ports.size() == 0) {
+                        Card temp = callPairs();
+                        if (temp != null){
+                            throwCard(temp);
+                        }
+                    } else {
+                        System.out.println("You cannot call pairs if you aren't dealing!");
+                    } playerAction();
                 case 7:
                     System.out.println("Which card do you change the Trumpf with?");
                     showCardsToThrow();
                     i = scanner.nextInt();
-                    changeTrumpfCard(throwCard(i));
+                    changeTrumpfCard(getCardsInHand().get(i));
 
                 case 8:
                     if (Deck.getStapel().size() > 0) {
@@ -56,7 +64,7 @@ public class HumanPlayer extends Player {
                     }
                     playerAction();
                 case 9:
-                    Controller.endingGame(this);
+                    controller.endingGame(this);
                 default:
                     playerAction();
             }
@@ -72,14 +80,14 @@ public class HumanPlayer extends Player {
         System.out.println("Show me what you got!");
 
         showCardsToThrow();
-        int m = scanner.nextInt()-1;
-        Card master = cardsInHand.get(m);
+        int m = scanner.nextInt();
+        Card master = cardsInHand.get(m-1);
         System.out.println("...and?");
         int s = scanner.nextInt();
-        Card slave = cardsInHand.get(s);
+        Card slave = cardsInHand.get(s-1);
 
         if (checkPair(master, slave)) {
-            if (master.getValue()<slave.getValue()) {
+            if (master.getValue() < slave.getValue()) {
                 return master;
             } else {
                 return slave;
@@ -105,16 +113,6 @@ public class HumanPlayer extends Player {
         return false;
     }
 
-    private Card throwCard(int i) {
-        //System.out.println("throwCard");
-        i--;
-        System.out.println(Fonts.GREEN_BOLD + name + " threw: " + cardsInHand.get(i).getName() + Fonts.RESET);
-
-        Card temp = cardsInHand.get(i);
-        cardsInHand.remove(cardsInHand.get(i));
-        return temp;
-    }
-
     private void playerActionOptions() {
         System.out.println(Fonts.BLUE_BOLD + name + " is on turn" + Fonts.RESET);
 
@@ -122,7 +120,9 @@ public class HumanPlayer extends Player {
 
         showCardsToThrow();
 
-        System.out.println("Action 6: Call Pairs");
+        if (controller.ports.size() == 0) {
+            System.out.println("Action 6: Call Pairs");
+        }
 
         System.out.println("Action 7: Change the Trumpfcard");
 

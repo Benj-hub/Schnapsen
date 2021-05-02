@@ -6,28 +6,36 @@ import java.util.Scanner;
 
 class Controller {
 
-    //Input for tricks
-    static ArrayList<Port> ports = new ArrayList<>();
-    //collecting players
-    private static ArrayList<Player> players = new ArrayList<>();
-    private static boolean gameRuns = true;
+    private Deck deck;
 
-    public static boolean isGameRuns() {
+    public Deck getDeck() {
+        return deck;
+    }
+
+    //Input for tricks
+     ArrayList<Port> ports = new ArrayList<>();
+    //collecting players
+    private ArrayList<Player> players = new ArrayList<>();
+    private boolean gameRuns = true;
+
+    public boolean isGameRuns() {
         return gameRuns;
     }
 
-    public static ArrayList<Port> getPorts() {
+    public ArrayList<Port> getPorts() {
         return ports;
     }
 
-    public static ArrayList<Player> getPlayers() {
+    public ArrayList<Player> getPlayers() {
         return players;
     }
 
     Controller() {
+
+        Deck deck = new Deck();
         System.out.println("What's your name?");
         //creation of Player1
-        Player p1 = new HumanPlayer();
+        Player p1 = new HumanPlayer(this);
         players.add(p1);
         createOtherPlayer();
         dealCards();
@@ -46,11 +54,11 @@ class Controller {
         System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + Deck.getTrumpf().getName() + Fonts.RESET);
     }
 
-    private static void gameRuns(){
+    private void gameRuns(){
         gameRuns = false;
     }
 
-    static void addScore(Player player){
+    void addScore(Player player){
         int newScore = 0;
         for (Port p : ports) {
             newScore += p.getCard().getValue();
@@ -58,15 +66,16 @@ class Controller {
         player.setScore(newScore);
     }
 
-    static void printCardsOnTable() {
+    void printCardsOnTable() {
         System.out.println(Fonts.YELLOW_BOLD + "On the Table: " + Fonts.RESET);
         for (Port p : ports) {
             System.out.println(Fonts.YELLOW_BOLD + p.getCard().getName() + Fonts.RESET);
         }
     }
-    static Player turnSwitcher(Player player) {
+    Player turnSwitcher(Player player) {
         System.out.println("started turnswitcher");
         System.out.println(Fonts.BLUE_BOLD + "Turn ended" + Fonts.RESET);
+
         int i = 1;
         if (ports.size() > 0) {
             for (Player p : players) {
@@ -82,9 +91,8 @@ class Controller {
         }
         return player;
     }
-    static Player tricks() {
+    Player tricks() {
         System.out.println("started tricks");
-
         Port winCard = checkWinCard();
 
         try {
@@ -94,11 +102,10 @@ class Controller {
         }
 
         Player temp = findPlayersWinCard(winCard);
-        ports.clear();
         return temp;
     }
 
-    public static void endingGame(Player p) {
+    public void endingGame(Player p) {
         gameRuns();
         Player winPlayer = p;
         for (Player temp : players) {
@@ -107,7 +114,7 @@ class Controller {
         announceWinner(winPlayer);
     }
 
-    private static Player findPlayersWinCard(Port winCard) {
+    private Player findPlayersWinCard(Port winCard) {
         System.out.println("started findPlayerWinCard");
         for (Port p : ports) {
             if (p.getPlayer().equals(winCard.getPlayer())) {
@@ -131,7 +138,7 @@ class Controller {
         return null;
     }
 
-    private static Port findBetterCard(Port master, Port slave) {
+    private Port findBetterCard(Port master, Port slave) {
         boolean checkIfSlaveIsHigher = slave.getCard().getValue() > master.getCard().getValue();
         boolean checkIfSlaveMatchescolour = slave.getCard().getColor().equals(master.getCard().getColor());
         boolean checkIfSlaveIsTrumpf = slave.getCard().getColor().equals(Deck.getTrumpfColor());
@@ -143,7 +150,7 @@ class Controller {
         return master;
     }
 
-    static Port checkWinCard() {
+    Port checkWinCard() {
         Port winCard = ports.get(0);
         Port temp;
         for (Port port : ports) {
@@ -153,7 +160,7 @@ class Controller {
          return winCard;
     }
 
-    private static Player searchWinner(Player p, Player winPlayer) {
+    private Player searchWinner(Player p, Player winPlayer) {
 
         if (p.getScore() > winPlayer.getScore()) {
             return p;
@@ -161,7 +168,7 @@ class Controller {
         return winPlayer;
     }
 
-    private static void announceWinner(Player winPlayer) {
+    private void announceWinner(Player winPlayer) {
         if (winPlayer.getScore() < 33) {
             System.out.println(Fonts.BLUE_BOLD + "Player " + winPlayer.getName() + " called too early and lost the game" +
                     '\n' + "Your Score: " + winPlayer.getScore());
@@ -177,14 +184,14 @@ class Controller {
         }
     }
 
-    static Boolean checkColour(Card card) {
+    Boolean checkColour(Card card) {
         boolean checkIfCardmatchescolour = card.getColor().equals(ports.get(0).getCard().getColor());
         boolean checkIfCardIsTrumpf = card.getColor().equals(Deck.getTrumpfColor());
 
         return checkIfCardIsTrumpf || checkIfCardmatchescolour;
     }
 
-    private static void createOtherPlayer() {
+    private void createOtherPlayer() {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("how many players do you want to play against?");
@@ -199,10 +206,10 @@ class Controller {
 
             if (otherPlayer.equals("human")) {
 
-                players.add(new HumanPlayer());
+                players.add(new HumanPlayer(this));
 
             } else {
-                players.add(new NPC(i + 1));
+                players.add(new NPC(i + 1, this));
             }
         }
         Collections.shuffle(players);

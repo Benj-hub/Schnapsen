@@ -6,7 +6,8 @@ public class NPC extends Player {
 
     private ArrayList<Card> throwCard = new ArrayList<>();
 
-    NPC(int i) {
+    NPC(int i, Controller controller) {
+        super(controller);
         name = "Machine" + i;
     }
 
@@ -14,15 +15,43 @@ public class NPC extends Player {
     protected Port playerAction(){
         endingGame();
         blockStapel();
-        Card pairs = callPairs();
-        if (pairs != null){
-            executePairs(pairs);
-            return new Port(this, pairs);
-        } else if (Controller.ports.size() < 1){
-            return new Port(this, throwFirstCard());
+        Port temp;
+
+        //checking if NPC is on turn
+        if (controller.ports.size() == 0) {
+            //check if NPC should change Trumpf
+            Card card = lookToChangeTrumpCard();
+            if (card != null){
+                changeTrumpfCard(card);
+            }
+            Card pairs = callPairs();
+            if (pairs != null){
+                executePairs(pairs);
+                temp = new Port(this, throwCard(pairs));
+            } else {
+                temp = new Port(this, throwCard(throwFirstCard()));
+            }
         } else {
-            return new Port(this, throwAnswer());
+            temp = new Port(this, throwAnswer());
         }
+        drawCard();
+        return temp;
+    }
+
+    private Card lookToChangeTrumpCard(){
+        for (Card c:getCardsInHand()) {
+            if (conditionsToChangeTrumpCard(c)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    private boolean conditionsToChangeTrumpCard(Card card){
+        boolean cardmatchescolour = card.getColor().equals(Deck.getTrumpfColor());
+        boolean cardIsBube = card.getValue() == 2;
+
+        return cardmatchescolour && cardIsBube;
     }
 
     @Override
@@ -70,10 +99,10 @@ public class NPC extends Player {
     }
 
     public Card throwAnswer() {
-        Port master = Controller.checkWinCard();
-        for (Card card : this.getCardsInHand()) {
+        Port master = controller.getPorts().get(0);
+        for (Card card : getCardsInHand()) {
             Port slave = new Port(this, card);
-            if (!master.equals(slave)) {
+            if (conditionsToTrickCard(card)) {
                 throwCard.add(slave.getCard());
             }
         }
@@ -81,8 +110,14 @@ public class NPC extends Player {
             throwCard.add(findScapeGoat());
         }
         Collections.shuffle(throwCard);
-        System.out.println(name + " threw: " + throwCard.get(0).getName());
         return throwCard.get(0);
+    }
+
+    private boolean conditionsToTrickCard(Card card){
+        boolean cardIsHigher = controller.getPorts().get(0).getCard().getValue() < card.getValue();
+        boolean cardIsTrump = card.getColor().equals(Deck.getTrumpfColor());
+
+        return cardIsHigher && cardIsTrump;
     }
 
     private Card findScapeGoat() {
@@ -98,7 +133,7 @@ public class NPC extends Player {
     private void endingGame() {
         System.out.println("requesting ending game");
         if (getScore() > 65) {
-            Controller.endingGame(this);
+            controller.endingGame(this);
         }
     }
 
@@ -110,7 +145,7 @@ public class NPC extends Player {
     }
 
     private ArrayList<Card> thrownCards() {
-        for (Port port : Controller.ports) {
+        for (Port port : controller.ports) {
             thrownCards.add(port.getCard());
         }
         return thrownCards;
@@ -147,7 +182,6 @@ public class NPC extends Player {
         }
 
         Collections.shuffle(throwCard);
-        System.out.println(Fonts.BLUE_BOLD + name + " threw " + throwCard.get(0).getName() + Fonts.RESET);
         return throwCard.get(0);
     }
 
@@ -174,7 +208,6 @@ public class NPC extends Player {
         if (winCard == null) {
             return gainPointsSaveCards();
         }
-        System.out.println(Fonts.BLUE_BOLD + name + " threw " + winCard.getName()+ Fonts.RESET);
         return winCard;
     }
 

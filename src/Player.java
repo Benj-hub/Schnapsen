@@ -55,18 +55,18 @@ public abstract class Player {
     }
 
     private void drawNewCard() {
-        cardsInHand.add(Deck.getStapel().get(0));
-        Deck.getStapel().remove(Deck.getStapel().get(0));
+        cardsInHand.add(controller.deck.getStapel().get(0));
+        controller.deck.getStapel().remove(controller.deck.getStapel().get(0));
     }
 
     private void drawTrumpf() {
-        cardsInHand.add(Deck.getTrumpf());
-        Deck.setTrumpf(null);
+        cardsInHand.add(controller.deck.getTrumpf());
+        controller.deck.setTrumpf(null);
     }
 
     protected void drawCard() {
-        if (Deck.getStapel().size() == 0) {
-            if (Deck.getTrumpf() != null) {
+        if (controller.deck.getStapel().size() == 0) {
+            if (controller.deck.getTrumpf() != null) {
                 drawTrumpf();
             }
             System.out.println(Fonts.YELLOW_BOLD + "Stapel is empty!" + Fonts.RESET);
@@ -77,8 +77,8 @@ public abstract class Player {
 
     protected void changeTrumpfCard(Card card) {
         if (card.getColor().equals(controller.getDeck().getTrumpf().getColor()) && card.getValue() == 2) {
-            cardsInHand.add(Deck.getTrumpf());
-            Deck.setTrumpf(card);
+            cardsInHand.add(controller.deck.getTrumpf());
+            controller.deck.setTrumpf(card);
             getCardsInHand().remove(card);
             System.out.println(name + " gets Trump Card.");
             System.out.println("Trump changed to " + card.getName());

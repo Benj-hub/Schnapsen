@@ -14,10 +14,10 @@ public class main {
                 controller.printCardsOnTable();
                 player = controller.turnSwitcher(player);
             }
-            player = controller.tricks();
-            controller.addScore(player);
-            controller.printPlayerscore();
-            controller.getPorts().clear();
+                player = controller.tricks();
+                controller.addScore(player);
+                //controller.printPlayerscore();
+                controller.getPorts().clear();
         }
     }
     }

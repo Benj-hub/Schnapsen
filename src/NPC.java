@@ -29,9 +29,11 @@ public class NPC extends Player {
                 executePairs(pairs);
                 cardOutput = new Port(this, throwCard(pairs));
             } else {
+                System.out.println("throw first card");
                 cardOutput = new Port(this, throwCard(throwFirstCard()));
             }
         } else {
+            System.out.println("throw answer");
             cardOutput = new Port(this, throwCard(throwAnswer()));
         }
         drawCard();
@@ -39,7 +41,7 @@ public class NPC extends Player {
     }
 
     private Card lookToChangeTrumpCard(){
-        if (Deck.getTrumpf() != null){
+        if (controller.deck.getTrumpf() != null){
         for (Card c:getCardsInHand()) {
             if (conditionsToChangeTrumpCard(c)) {
                 return c;
@@ -50,7 +52,7 @@ public class NPC extends Player {
     }
 
     private boolean conditionsToChangeTrumpCard(Card card){
-        boolean cardmatchescolour = card.getColor().equals(Deck.getTrumpfColor());
+        boolean cardmatchescolour = card.getColor().equals(controller.deck.getTrumpfColor());
         boolean cardIsBube = card.getValue() == 2;
 
         return cardmatchescolour && cardIsBube;
@@ -63,17 +65,17 @@ public class NPC extends Player {
 
     @Override
     protected Card callPairs() {
-        System.out.println(Fonts.RED_BOLD + "requesting callPairs" + Fonts.RESET);
+        //System.out.println(Fonts.RED_BOLD + "requesting callPairs" + Fonts.RESET);
         for (Card master : getCardsInHand()) {
             for (Card slave : getCardsInHand()) {
                 if (cardMatchesPair(master, slave)) {
-                    System.out.println("checking match");
+                    //System.out.println("checking match");
                     System.out.println(master.getName() + ", " + slave.getName());
                     if (slave.getValue() < master.getValue()){
-                        System.out.println("slave is smaller");
+                        //System.out.println("slave is smaller");
                         return slave;
                     } else {
-                        System.out.println("master is smaller");
+                        //System.out.println("master is smaller");
                         return master;
                     }
                 }
@@ -83,7 +85,7 @@ public class NPC extends Player {
     }
 
     private void executePairs(Card card){
-        if (Deck.getTrumpfColor().equals(card.getColor())){
+        if (controller.deck.getTrumpfColor().equals(card.getColor())){
             score += 40;
             System.out.println("40 Points for Griff... *cough* " + name + "!");
         } else {
@@ -117,7 +119,7 @@ public class NPC extends Player {
     private boolean conditionsToTrickCard(Card card){
         boolean cardIsSameColour = controller.getPorts().get(0).getCard().getColor().equals(card.getColor());
         boolean cardIsHigher = controller.getPorts().get(0).getCard().getValue() < card.getValue();
-        boolean cardIsTrump = card.getColor().equals(Deck.getTrumpfColor());
+        boolean cardIsTrump = card.getColor().equals(controller.deck.getTrumpfColor());
 
         return cardIsSameColour && cardIsHigher && cardIsTrump;
     }
@@ -133,16 +135,16 @@ public class NPC extends Player {
     }
 
     private void endingGame() {
-        System.out.println("requesting ending game");
+        //System.out.println("requesting ending game");
         if (getScore() > 65) {
             controller.endingGame(this);
         }
     }
 
     private void blockStapel() {
-        System.out.println("requesting blockstapel");
+        //System.out.println("requesting blockstapel");
         if (66 <= (possiblePoints()) + score) {
-            Deck.blockStapel();
+            controller.deck.blockStapel();
         }
     }
 
@@ -168,9 +170,13 @@ public class NPC extends Player {
     }
 
     private Card gainPointsSaveCards() {
+        throwCard.clear();
         for (Card c : getCardsInHand()) {
             if (c.getValue() < 10) {
                 throwCard.add(c);
+            }
+            if (c.getValue() == 2) {
+                return c;
             }
         }
         if (throwCard.isEmpty()) {
@@ -188,7 +194,7 @@ public class NPC extends Player {
     }
 
     private Card gainPointsLooseCards() {
-        Card winCard = null;
+        Card winCard = getCardsInHand().get(0);
         for (Card card : cardsInHand) {
             if (card.getValue() == 11) {
                 winCard = card;

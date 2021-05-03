@@ -24,23 +24,24 @@ public class HumanPlayer extends Player {
 
     @Override
     protected Port playerAction() {
-        System.out.println("started playerAction");
+        //System.out.println("started playerAction");
         playerActionOptions();
         return new Port(this, playerActionExecution());
     }
 
     protected Card playerActionExecution() {
-        System.out.println("started playerActionExecution");
+        Card card = null;
+        //System.out.println("started playerActionExecution");
 
         try {
             int i = scanner.nextInt();
 
             if (i < 6) {
                 drawCard();
-                return throwCard(i);
+                card = throwCard(i);
+                return card;
             } else if (controller.ports.size() != 0) {
                 System.out.println("You have to deal to make that action!");
-                playerAction();
             }
             switch (i) {
                 case 6:
@@ -58,24 +59,25 @@ public class HumanPlayer extends Player {
                         changeTrumpfCard(getCardsInHand().get(i-1));
                         break;
                 case 8:
-                        if (Deck.getStapel().size() > 0) {
+                        if (controller.getDeck().getStapel().size() > 0) {
                             System.out.println(name + " blocked the Stapel");
-                            Deck.blockStapel();
+                            controller.deck.blockStapel();
+                            System.out.println("What action shall follow?");
                         } else {
                             System.out.println("Stapel already blocked!");
-                        } playerActionExecution();
+                        }
+                        break;
                 case 9:
                         controller.endingGame(this);
                         break;
-                default:
-                    playerActionExecution();
             }
-            playerActionExecution();
         } catch (InputMismatchException input) {
             System.out.println("Input couldn't be read: " + input.getMessage());
-            playerActionExecution();
         }
-        return null;
+        if (card == null){
+            card = playerActionExecution();
+        }
+        return card;
     }
 
     @Override
@@ -104,7 +106,7 @@ public class HumanPlayer extends Player {
 
     private boolean checkPair(Card master, Card slave) {
         if (cardMatchesPair(master, slave)) {
-            if (Deck.getTrumpfColor().equals(master.getColor())) {
+            if (controller.deck.getTrumpfColor().equals(master.getColor())) {
                 score += 40;
                 System.out.println("40 Points for Griff... *cough* " + name + "!");
             } else {
@@ -128,7 +130,7 @@ public class HumanPlayer extends Player {
 
             System.out.println("Action 7: Change the Trumpfcard");
 
-            if (Deck.getStapel().size() > 0) {
+            if (controller.deck.getStapel().size() > 0) {
                 System.out.println("Action 8: Block the stapel");
             }
             System.out.println("Action 9: Bet on ending the Game and start counting!");

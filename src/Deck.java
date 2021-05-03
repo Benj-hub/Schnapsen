@@ -11,10 +11,9 @@ class Deck {
     private static final String DB_DECK = "DoppelDeutscheKarten.db";
     private static final String CONNECTION_STRING = "jdbc:sqlite:" + DB_DECK;
 
-    private static Card trumpf;
-    private static String trumpfColor;
-    private static ArrayList<Card> stapel;
-    public static Deck deck = new Deck();
+    private Card trumpf;
+    private String trumpfColor;
+    private ArrayList<Card> stapel;
 
     public Deck() {
         stapel = collectStapel(new ArrayList<Card>());
@@ -28,7 +27,7 @@ class Deck {
         }
     }
 
-    public static void blockStapel() {
+    public void blockStapel() {
         ArrayList<Card> tempStapel = new ArrayList<>(stapel);
         for (Card c : tempStapel) {
             stapel.remove(c);
@@ -105,19 +104,19 @@ class Deck {
         return stapel;
     }
 
-    public static Card getTrumpf() {
+    public Card getTrumpf() {
         return trumpf;
     }
 
-    public static String getTrumpfColor() {
+    public String getTrumpfColor() {
         return trumpfColor;
     }
 
-    public static ArrayList<Card> getStapel() {
+    public ArrayList<Card> getStapel() {
         return stapel;
     }
 
-    public static void setTrumpf(Card trumpf) {
-        Deck.trumpf = trumpf;
+    public void setTrumpf(Card trumpf) {
+        this.trumpf = trumpf;
     }
 }

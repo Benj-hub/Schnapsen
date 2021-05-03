@@ -8,33 +8,20 @@ class Controller {
 
     //Input for tricks
     ArrayList<Port> ports = new ArrayList<>();
-    private Deck deck;
+    protected Deck deck = new Deck();
     //collecting players
     private ArrayList<Player> players = new ArrayList<>();
     private boolean gameRuns = true;
 
     Controller() {
 
-        Deck deck = new Deck();
-        System.out.println("What's your name?");
         //creation of Player1
         Player p1 = new HumanPlayer(this);
         players.add(p1);
         createOtherPlayer();
         dealCards();
 
-        for (Player player :
-                players) {
-            System.out.println(player.getName());
-            for (Card c : player.getCardsInHand()) {
-                System.out.println(c.getName());
-            }
-            System.out.println("=================================");
-        }
-        for (Card c : Deck.getStapel()) {
-            System.out.println(c.getName());
-        }
-        System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + Deck.getTrumpf().getName() + Fonts.RESET);
+        System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + deck.getTrumpf().getName() + Fonts.RESET);
     }
 
     protected boolean isNoCardsInHand(){
@@ -82,7 +69,7 @@ class Controller {
     }
 
     Player turnSwitcher(Player player) {
-        System.out.println("started turnswitcher");
+        //System.out.println("started turnswitcher");
         System.out.println(Fonts.BLUE_BOLD + "Turn ended" + Fonts.RESET);
 
         int i = 1;
@@ -102,7 +89,7 @@ class Controller {
     }
 
     Player tricks() {
-        System.out.println(Fonts.RED_BOLD + "started tricks" + Fonts.RESET);
+        //System.out.println(Fonts.RED_BOLD + "started tricks" + Fonts.RESET);
         Port temp;
         Port winCard = ports.get(0);
         for (Port port : ports) {
@@ -115,9 +102,9 @@ class Controller {
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-        System.out.println(winCard.getCard().getName());
+        //System.out.println(winCard.getCard().getName());
         System.out.println(Fonts.RED_BOLD + winCard.getPlayer().getName() + " won cards: " + Fonts.RESET);
-        printCardsOnTable();
+        //printCardsOnTable();
         return winCard.getPlayer();
     }
 
@@ -140,8 +127,8 @@ class Controller {
     private Port conditionsToTrickCard(Port master, Port slave) {
         boolean checkIfSlaveIsHigher = slave.getCard().getValue() > master.getCard().getValue();
         boolean checkIfSlaveMatchescolour = slave.getCard().getColor().equals(master.getCard().getColor());
-        boolean checkIfSlaveIsTrumpf = slave.getCard().getColor().equals(Deck.getTrumpfColor());
-        boolean checkIfMasterIsTrumpf = master.getCard().getColor().equals(Deck.getTrumpfColor());
+        boolean checkIfSlaveIsTrumpf = slave.getCard().getColor().equals(deck.getTrumpfColor());
+        boolean checkIfMasterIsTrumpf = master.getCard().getColor().equals(deck.getTrumpfColor());
 
         if ((checkIfSlaveIsHigher && checkIfSlaveMatchescolour) || (checkIfSlaveIsTrumpf && !checkIfMasterIsTrumpf)) {
             master = slave;
@@ -175,7 +162,7 @@ class Controller {
 
     Boolean checkColour(Card card) {
         boolean checkIfCardmatchescolour = card.getColor().equals(ports.get(0).getCard().getColor());
-        boolean checkIfCardIsTrumpf = card.getColor().equals(Deck.getTrumpfColor());
+        boolean checkIfCardIsTrumpf = card.getColor().equals(deck.getTrumpfColor());
 
         return checkIfCardIsTrumpf || checkIfCardmatchescolour;
     }
@@ -183,13 +170,13 @@ class Controller {
     private void createOtherPlayer() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("how many players do you want to play against?");
+        System.out.println("you will play against the Machine!");
 
         int anzahlSpieler = 1; //scanner.nextInt();
         for (int i = 0; i < anzahlSpieler; i++) {
-            System.out.println("Is Player" + (i + 2) + " another Human or a Machine?");
-            System.out.println("write: human");
-            System.out.println("write: machine");
+            //System.out.println("Is Player" + (i + 2) + " another Human or a Machine?");
+            //System.out.println("write: human");
+            //System.out.println("write: machine");
 
             String otherPlayer = "machine";//scanner.next();
 
@@ -207,7 +194,7 @@ class Controller {
     private void dealCards() {
 
         for (Player p : players) {
-            ArrayList<Card> tempStapel = new ArrayList<>(Deck.deck.getStapel());
+            ArrayList<Card> tempStapel = new ArrayList<>(deck.getStapel());
 
             ArrayList<Card> tempHand = new ArrayList<>();
 
@@ -215,7 +202,7 @@ class Controller {
 
                 if (tempHand.size() < 5) {
                     tempHand.add(c);
-                    Deck.getStapel().remove(c);
+                    deck.getStapel().remove(c);
                 }
                 p.setCardsInHand(tempHand);
             }

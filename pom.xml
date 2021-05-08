@@ -50,7 +50,6 @@
         <groupId>org.xerial</groupId>
         <artifactId>sqlite-jdbc</artifactId>
         <version>3.32.3.2</version>
-        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
     </dependency>
 
 </dependencies>

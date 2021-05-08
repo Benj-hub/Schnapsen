@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class NPC extends Player {
-    private static ArrayList<Card> thrownCards = new ArrayList<>();
+    private ArrayList<Card> thrownCards = new ArrayList<>();
 
     private ArrayList<Card> throwCard = new ArrayList<>();
 

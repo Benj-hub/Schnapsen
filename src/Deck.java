@@ -1,15 +1,13 @@
 // created by Benjamin Lamprecht
 
-import sun.awt.SunHints;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
 class Deck {
 
-    private static final String DB_DECK = "DoppelDeutscheKarten.db";
-    private static final String CONNECTION_STRING = "jdbc:sqlite:" + DB_DECK;
+    private final String DB_DECK = "DoppelDeutscheKarten.db";
+    private final String CONNECTION_STRING = "jdbc:sqlite:" + DB_DECK;
 
     private Card trumpf;
     private String trumpfColor;

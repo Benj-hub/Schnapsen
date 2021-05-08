@@ -7,7 +7,7 @@ import java.util.Collections;
 class Deck {
 
     private final String DB_DECK = "DoppelDeutscheKarten.db";
-    private final String CONNECTION_STRING = "jdbc:sqlite:" + DB_DECK;
+    private final String CONNECTION_STRING = "jdbc:sqlite::resource:" + DB_DECK;
 
     private Card trumpf;
     private String trumpfColor;

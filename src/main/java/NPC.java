@@ -5,6 +5,16 @@ public class NPC extends Player {
     private ArrayList<Card> thrownCards = new ArrayList<>();
 
     private ArrayList<Card> throwCard = new ArrayList<>();
+    private boolean herzSaveToPlay = false;
+    private boolean karoSaveToPlay = false;
+    private boolean pikSaveToPlay = false;
+    private boolean kreuzSaveToPlay = false;
+    private ArrayList<Card> countHerz = new ArrayList<>();
+    private ArrayList<Card> countKaro = new ArrayList<>();
+    private ArrayList<Card> countPik = new ArrayList<>();
+    private ArrayList<Card> countKreuz = new ArrayList<>();
+    private String trumpf = controller.deck.getTrumpf().getColor();
+    private ArrayList<Card> countTrumpfCards;
 
     NPC(int i, Controller controller) {
         super(controller);
@@ -12,20 +22,21 @@ public class NPC extends Player {
     }
 
     @Override
-    protected Port playerAction(){
-       Port cardOutput;
+    protected Port playerAction() {
+        Port cardOutput;
 
+        countCards();
         //checking if NPC is on turn
         if (controller.ports.size() == 0) {
             endingGame();
             blockStapel();
             //check if NPC should change Trumpf
             Card card = lookToChangeTrumpCard();
-            if (card != null){
+            if (card != null) {
                 changeTrumpfCard(card);
             }
             Card pairs = callPairs();
-            if (pairs != null){
+            if (pairs != null) {
                 executePairs(pairs);
                 cardOutput = new Port(this, throwCard(pairs));
             } else {
@@ -40,18 +51,18 @@ public class NPC extends Player {
         return cardOutput;
     }
 
-    private Card lookToChangeTrumpCard(){
-        if (controller.deck.getTrumpf() != null){
-        for (Card c:getCardsInHand()) {
-            if (conditionsToChangeTrumpCard(c)) {
-                return c;
+    private Card lookToChangeTrumpCard() {
+        if (controller.deck.getTrumpf() != null) {
+            for (Card c : getCardsInHand()) {
+                if (conditionsToChangeTrumpCard(c)) {
+                    return c;
+                }
             }
-        }
         }
         return null;
     }
 
-    private boolean conditionsToChangeTrumpCard(Card card){
+    private boolean conditionsToChangeTrumpCard(Card card) {
         boolean cardmatchescolour = card.getColor().equals(controller.deck.getTrumpfColor());
         boolean cardIsBube = card.getValue() == 2;
 
@@ -71,7 +82,7 @@ public class NPC extends Player {
                 if (cardMatchesPair(master, slave)) {
                     //System.out.println("checking match");
                     System.out.println(master.getName() + ", " + slave.getName());
-                    if (slave.getValue() < master.getValue()){
+                    if (slave.getValue() < master.getValue()) {
                         //System.out.println("slave is smaller");
                         return slave;
                     } else {
@@ -84,8 +95,8 @@ public class NPC extends Player {
         return null;
     }
 
-    private void executePairs(Card card){
-        if (controller.deck.getTrumpfColor().equals(card.getColor())){
+    private void executePairs(Card card) {
+        if (controller.deck.getTrumpfColor().equals(card.getColor())) {
             score += 40;
             System.out.println("40 Points for Griff... *cough* " + name + "!");
         } else {
@@ -116,7 +127,7 @@ public class NPC extends Player {
         return throwCard.get(0);
     }
 
-    private boolean conditionsToTrickCard(Card card){
+    private boolean conditionsToTrickCard(Card card) {
         boolean cardIsSameColour = controller.getPorts().get(0).getCard().getColor().equals(card.getColor());
         boolean cardIsHigher = controller.getPorts().get(0).getCard().getValue() < card.getValue();
         boolean cardIsTrump = card.getColor().equals(controller.deck.getTrumpfColor());
@@ -163,7 +174,7 @@ public class NPC extends Player {
             if (c.getValue() > 9) {
                 thrownpoints += c.getValue();
             }
-                possiblePoints = 108 - thrownpoints;
+            possiblePoints = 108 - thrownpoints;
 
         }
         return possiblePoints;
@@ -194,74 +205,129 @@ public class NPC extends Player {
     }
 
     private Card gainPointsLooseCards() {
-        Card winCard = getCardsInHand().get(0);
+        ArrayList<Card> throwCard = new ArrayList<>();
         for (Card card : cardsInHand) {
-            if (card.getValue() == 11) {
-                winCard = card;
-                return winCard;
+
+            if (card.getColor().equals("Herz") && herzSaveToPlay) {
+                throwCard.add(card);
             }
-            if (countCards().get(0) == 0 && card.getValue() == 10) {
-                winCard = card;
-                return winCard;
+            if (card.getColor().equals("Karo") && karoSaveToPlay) {
+                throwCard.add(card);
             }
-            if (countCards().get(1) == 0 && card.getValue() == 4) {
-                winCard = card;
-                return winCard;
+            if (card.getColor().equals("Pik") && pikSaveToPlay) {
+                throwCard.add(card);
             }
-            if (countCards().get(2) == 0 && card.getValue() == 3) {
-                winCard = card;
-                return winCard;
+            if (card.getColor().equals("Kreuz") && kreuzSaveToPlay) {
+                throwCard.add(card);
             }
+
         }
-        if (winCard == null) {
+        if (throwCard.isEmpty()) {
             return gainPointsSaveCards();
         }
-        return winCard;
+        Collections.shuffle(throwCard);
+        return throwCard.get(0);
     }
 
-    private ArrayList<Integer> countCards() {
-        ArrayList<Integer> countCards = new ArrayList<>();
-        int amountAss = 0;
-        int amountZehn = 0;
-        int amountKoenig = 0;
-        int amountDame = 0;
-        int amountBube = 0;
+    private boolean advancedConditionsToThrowCard(Card card) {
+        boolean trumpfisGone = countTrumpfCards.size() == 0;
+        boolean isntTrumpf = !card.getColor().equals(trumpf);
 
-        for (Card c : thrownCards()) {
-            int i = c.getValue();
-            switch (i) {
-                case 11:
-                    amountAss++;
-                case 10:
-                    amountZehn++;
-                case 4:
-                    amountKoenig++;
-                case 3:
-                    amountDame++;
-                case 2:
-                    amountBube++;
-            }
+        switch (card.getColor()) {
+            case "Herz":
+                for (Card c : countHerz) {
+                    if (c.getValue() > card.getValue()) {
+                        return false;
+                    }
+                }
+            case "Karo":
+                for (Card c : countHerz) {
+                    if (c.getValue() > card.getValue()) {
+                        return false;
+                    }
+                }
+            case "Pik":
+                for (Card c : countHerz) {
+                    if (c.getValue() > card.getValue()) {
+                        return false;
+                    }
+                }
+            case "Kreuz":
+                for (Card c : countHerz) {
+                    if (c.getValue() > card.getValue()) {
+                        return false;
+                    }
+                }
         }
-        for (Card c : cardsInHand) {
-            int i = c.getValue();
-            switch (i) {
-                case 11:
-                    amountAss--;
-                case 10:
-                    amountZehn--;
-                case 4:
-                    amountKoenig--;
-                case 3:
-                    amountDame--;
-                case 2:
-                    amountBube--;
-            }
-        }
-        countCards.add(amountAss);
-        countCards.add(amountZehn);
-        countCards.add(amountKoenig);
-        countCards.add(amountDame);
-        countCards.add(amountBube);
-        return countCards;
+        return trumpfisGone && isntTrumpf;
     }
+
+    private void notInOtherPlayersHand() {
+        filterCards(controller.deck.getTrumpf());
+
+        for (Card card : thrownCards()) {
+            filterCards(card).remove(card);
+        }
+        for (Card card : cardsInHand) {
+            filterCards(card).remove(card);
+        }
+
+        switch (trumpf) {
+            case "Herz":
+                countTrumpfCards = countHerz;
+            case "Karo":
+                countTrumpfCards = countKaro;
+            case "Pik":
+                countTrumpfCards = countPik;
+            case "Kreuz":
+                countTrumpfCards = countKreuz;
+            default:
+                System.out.println("no trumpf card!");
+                countTrumpfCards = null;
+        }
+
+        if (countTrumpfCards.size() == 0) {
+            if (countHerz.size() == 0) {
+                herzSaveToPlay = true;
+            }
+            if (countKaro.size() == 0) {
+                karoSaveToPlay = true;
+            }
+            if (countPik.size() == 0) {
+                pikSaveToPlay = true;
+            }
+            if (countKreuz.size() == 0) {
+                kreuzSaveToPlay = true;
+            }
+        }
+    }
+
+    private ArrayList<Card> filterCards(Card card) {
+        if (card.getColor().equals("Herz")) {
+            return countHerz;
+        }
+        if (card.getColor().equals("Karo")) {
+            return countKaro;
+        }
+        if (card.getColor().equals("Pik")) {
+            return countPik;
+        }
+        if (card.getColor().equals("Kreuz")) {
+            return countKreuz;
+        }
+        return null;
+    }
+
+    private void couldBeInOthersHand() {
+        Deck deck = new Deck();
+        for (Card card : deck.getStapel()) {
+            filterCards(card).add(card);
+        }
+    }
+
+    private void countCards(){
+        couldBeInOthersHand();
+        notInOtherPlayersHand();
+    }
+
 }

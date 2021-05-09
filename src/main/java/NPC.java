@@ -24,8 +24,15 @@ public class NPC extends Player {
     @Override
     protected Port playerAction() {
         Port cardOutput;
+        thrownCards();
 
-        countCards();
+        if (!thrownCards.isEmpty()) {
+            for (Card card :
+                    thrownCards) {
+                System.out.println(card.getName());
+            }
+        }
+        //countCards();
         //checking if NPC is on turn
         if (controller.ports.size() == 0) {
             endingGame();
@@ -48,6 +55,7 @@ public class NPC extends Player {
             cardOutput = new Port(this, throwCard(throwAnswer()));
         }
         drawCard();
+        thrownCards.add(cardOutput.getCard());
         return cardOutput;
     }
 
@@ -114,6 +122,7 @@ public class NPC extends Player {
     }
 
     public Card throwAnswer() {
+        throwCard.clear();
         Card master = controller.getPorts().get(0).getCard();
         for (Card card : getCardsInHand()) {
             if (conditionsToTrickCard(card)) {
@@ -208,16 +217,16 @@ public class NPC extends Player {
         ArrayList<Card> throwCard = new ArrayList<>();
         for (Card card : cardsInHand) {
 
-            if (card.getColor().equals("Herz") && herzSaveToPlay) {
+            if (card.getColor().equals("herz") && herzSaveToPlay) {
                 throwCard.add(card);
             }
-            if (card.getColor().equals("Karo") && karoSaveToPlay) {
+            if (card.getColor().equals("karo") && karoSaveToPlay) {
                 throwCard.add(card);
             }
-            if (card.getColor().equals("Pik") && pikSaveToPlay) {
+            if (card.getColor().equals("pik") && pikSaveToPlay) {
                 throwCard.add(card);
             }
-            if (card.getColor().equals("Kreuz") && kreuzSaveToPlay) {
+            if (card.getColor().equals("kreuz") && kreuzSaveToPlay) {
                 throwCard.add(card);
             }
 
@@ -229,30 +238,40 @@ public class NPC extends Player {
         return throwCard.get(0);
     }
 
+    private String playerCouldntmatchCard() {
+
+        for (int i = thrownCards.size(); i < controller.getPlayers().size(); i--) {
+            if (!thrownCards.get(thrownCards.size()-1).equals(thrownCards.get(i / 2))) {
+                return thrownCards.get(i / 2).getColor();
+            }
+        }
+        return null;
+    }
+
     private boolean advancedConditionsToThrowCard(Card card) {
         boolean trumpfisGone = countTrumpfCards.size() == 0;
         boolean isntTrumpf = !card.getColor().equals(trumpf);
 
         switch (card.getColor()) {
-            case "Herz":
+            case "herz":
                 for (Card c : countHerz) {
                     if (c.getValue() > card.getValue()) {
                         return false;
                     }
                 }
-            case "Karo":
+            case "karo":
                 for (Card c : countHerz) {
                     if (c.getValue() > card.getValue()) {
                         return false;
                     }
                 }
-            case "Pik":
+            case "pik":
                 for (Card c : countHerz) {
                     if (c.getValue() > card.getValue()) {
                         return false;
                     }
                 }
-            case "Kreuz":
+            case "kreuz":
                 for (Card c : countHerz) {
                     if (c.getValue() > card.getValue()) {
                         return false;
@@ -263,27 +282,26 @@ public class NPC extends Player {
     }
 
     private void notInOtherPlayersHand() {
-        filterCards(controller.deck.getTrumpf());
-
-        for (Card card : thrownCards()) {
-            filterCards(card).remove(card);
-        }
-        for (Card card : cardsInHand) {
-            filterCards(card).remove(card);
-        }
 
         switch (trumpf) {
-            case "Herz":
+            case "herz":
                 countTrumpfCards = countHerz;
-            case "Karo":
+            case "karo":
                 countTrumpfCards = countKaro;
-            case "Pik":
+            case "pik":
                 countTrumpfCards = countPik;
-            case "Kreuz":
+            case "kreuz":
                 countTrumpfCards = countKreuz;
             default:
                 System.out.println("no trumpf card!");
                 countTrumpfCards = null;
+        }
+
+        for (Card card : thrownCards) {
+            filterCards(card).remove(card);
+        }
+        for (Card card : cardsInHand) {
+            filterCards(card).remove(card);
         }
 
         if (countTrumpfCards.size() == 0) {
@@ -303,25 +321,26 @@ public class NPC extends Player {
     }
 
     private ArrayList<Card> filterCards(Card card) {
-        if (card.getColor().equals("Herz")) {
+        if (card.getColor().equals("herz")) {
             return countHerz;
         }
-        if (card.getColor().equals("Karo")) {
+        if (card.getColor().equals("karo")) {
             return countKaro;
         }
-        if (card.getColor().equals("Pik")) {
+        if (card.getColor().equals("pik")) {
             return countPik;
         }
-        if (card.getColor().equals("Kreuz")) {
+        if (card.getColor().equals("kreuz")) {
             return countKreuz;
         }
+        System.out.println("Error filter Cards found null!");
         return null;
     }
 
     private void couldBeInOthersHand() {
-        Deck deck = new Deck();
-        for (Card card : deck.getStapel()) {
-            filterCards(card).add(card);
+        for (Card card : controller.deck.getStapel()) {
+            ArrayList<Card> temp = filterCards(card);
+            temp.add(card);
         }
     }
 

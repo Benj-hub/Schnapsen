@@ -104,6 +104,11 @@ public class HumanPlayer extends Player {
         return null;
     }
 
+    @Override
+    protected void countCards(Port port) {
+
+    }
+
     private boolean checkPair(Card master, Card slave) {
         if (cardMatchesPair(master, slave)) {
             if (controller.deck.getTrumpfColor().equals(master.getColor())) {

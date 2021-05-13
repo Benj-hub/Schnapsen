@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class NPC extends Player {
-    private ArrayList<Card> thrownCards = new ArrayList<>();
 
+    private ArrayList<Card> thrownCards = new ArrayList<>();
     private ArrayList<Card> throwCard = new ArrayList<>();
     private boolean herzSaveToPlay = false;
     private boolean karoSaveToPlay = false;
@@ -18,21 +18,14 @@ public class NPC extends Player {
 
     NPC(int i, Controller controller) {
         super(controller);
-        name = "Machine" + i;
+        name = "Machine-" + i;
+        couldBeInOthersHand();
     }
 
     @Override
     protected Port playerAction() {
+        couldBeInOthersHand();
         Port cardOutput;
-        thrownCards();
-
-        if (!thrownCards.isEmpty()) {
-            for (Card card :
-                    thrownCards) {
-                System.out.println(card.getName());
-            }
-        }
-        //countCards();
         //checking if NPC is on turn
         if (controller.ports.size() == 0) {
             endingGame();
@@ -55,7 +48,6 @@ public class NPC extends Player {
             cardOutput = new Port(this, throwCard(throwAnswer()));
         }
         drawCard();
-        thrownCards.add(cardOutput.getCard());
         return cardOutput;
     }
 
@@ -168,10 +160,8 @@ public class NPC extends Player {
         }
     }
 
-    private ArrayList<Card> thrownCards() {
-        for (Port port : controller.ports) {
-            thrownCards.add(port.getCard());
-        }
+    private ArrayList<Card> thrownCards(Card card) {
+        thrownCards.add(card);
         return thrownCards;
     }
 
@@ -179,7 +169,7 @@ public class NPC extends Player {
         int possiblePoints = 0;
         int thrownpoints = 0;
 
-        for (Card c : thrownCards()) {
+        for (Card c : thrownCards) {
             if (c.getValue() > 9) {
                 thrownpoints += c.getValue();
             }
@@ -238,13 +228,16 @@ public class NPC extends Player {
         return throwCard.get(0);
     }
 
-    private String playerCouldntmatchCard() {
-
+    private String playerCouldntmatchCard(ArrayList<Card> ports) {
+        /*
         for (int i = thrownCards.size(); i < controller.getPlayers().size(); i--) {
             if (!thrownCards.get(thrownCards.size()-1).equals(thrownCards.get(i / 2))) {
+                System.out.println("throw " + thrownCards.get(i / 2).getColor() + " to gain points");
                 return thrownCards.get(i / 2).getColor();
             }
         }
+
+         */
         return null;
     }
 
@@ -260,19 +253,19 @@ public class NPC extends Player {
                     }
                 }
             case "karo":
-                for (Card c : countHerz) {
+                for (Card c : countKaro) {
                     if (c.getValue() > card.getValue()) {
                         return false;
                     }
                 }
             case "pik":
-                for (Card c : countHerz) {
+                for (Card c : countPik) {
                     if (c.getValue() > card.getValue()) {
                         return false;
                     }
                 }
             case "kreuz":
-                for (Card c : countHerz) {
+                for (Card c : countKreuz) {
                     if (c.getValue() > card.getValue()) {
                         return false;
                     }
@@ -281,7 +274,7 @@ public class NPC extends Player {
         return trumpfisGone && isntTrumpf;
     }
 
-    private void notInOtherPlayersHand() {
+    private void saveToPlay() {
 
         switch (trumpf) {
             case "herz":
@@ -295,13 +288,6 @@ public class NPC extends Player {
             default:
                 System.out.println("no trumpf card!");
                 countTrumpfCards = null;
-        }
-
-        for (Card card : thrownCards) {
-            filterCards(card).remove(card);
-        }
-        for (Card card : cardsInHand) {
-            filterCards(card).remove(card);
         }
 
         if (countTrumpfCards.size() == 0) {
@@ -338,15 +324,22 @@ public class NPC extends Player {
     }
 
     private void couldBeInOthersHand() {
-        for (Card card : controller.deck.getStapel()) {
+        Deck deck = new Deck();
+        ArrayList<Card> deckInGame = deck.getStapel();
+        for (Card card : deckInGame) {
             ArrayList<Card> temp = filterCards(card);
             temp.add(card);
         }
     }
 
-    private void countCards(){
-        couldBeInOthersHand();
-        notInOtherPlayersHand();
+    private void couldBeInOthersHandRefresh(Card card) {
+        ArrayList<Card> temp = filterCards(card);
+        temp.remove(card);
     }
 
+    @Override
+    protected void countCards(Port port) {
+        couldBeInOthersHandRefresh(port.getCard());
+        thrownCards(port.getCard());
+    }
 }

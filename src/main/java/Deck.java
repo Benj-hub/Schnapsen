@@ -15,6 +15,9 @@ class Deck {
 
     public Deck() {
         stapel = collectStapel(new ArrayList<Card>());
+    }
+
+    protected void dealDeck (){
         Collections.shuffle(stapel);
         trumpf = trumpf(stapel);
         trumpfColor = trumpf.getColor();
@@ -52,7 +55,7 @@ class Deck {
         return card;
     }
 
-    private ArrayList<Card> collectStapel(ArrayList<Card> stapel) {
+    public ArrayList<Card> collectStapel(ArrayList<Card> stapel) {
 
         try {
             Class.forName("org.sqlite.JDBC");

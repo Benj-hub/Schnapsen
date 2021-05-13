@@ -134,4 +134,6 @@ public abstract class Player {
     public void setCardsInHand(ArrayList<Card> cardsInHand) {
         this.cardsInHand = cardsInHand;
     }
+
+    protected abstract void countCards(Port port);
 }

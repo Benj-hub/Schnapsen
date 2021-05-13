@@ -14,7 +14,7 @@ class Controller {
     private boolean gameRuns = true;
 
     Controller() {
-
+        deck.dealDeck();
         //creation of Player1
         Player p1 = new HumanPlayer(this);
         players.add(p1);
@@ -88,7 +88,16 @@ class Controller {
         return player;
     }
 
-    Player tricks() {
+    private void NPCsCountCards() {
+        for ( Port p : ports) {
+            if (p.getPlayer().getName().equals("machine")){
+                p.getPlayer().countCards(p);
+            }
+        }
+    }
+
+    protected Player tricks() {
+        NPCsCountCards();
         //System.out.println(Fonts.RED_BOLD + "started tricks" + Fonts.RESET);
         Port temp;
         Port winCard = ports.get(0);

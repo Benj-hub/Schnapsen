@@ -6,7 +6,7 @@ public class main {
     Controller controller = new Controller();
     Player player = controller.getPlayers().get(0);
 
-        while (controller.isGameRuns() && !controller.isNoCardsInHand()) {
+        while (controller.isGameRuns()) {
 
             while (controller.getPlayers().size() > controller.getPorts().size()) {
                 assert player != null;
@@ -18,6 +18,9 @@ public class main {
                 controller.addScore(player);
                 //controller.printPlayerscore();
                 controller.getPorts().clear();
+            if (controller.isNoCardsInHand()){
+                controller.endingGame(player);
+            }
         }
     }
     }

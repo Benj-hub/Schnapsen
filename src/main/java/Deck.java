@@ -35,7 +35,8 @@ class Deck {
         }
     }
 
-    /*public Card trumpfChange(Card card) {
+    /*
+    public Card trumpfChange(Card card) {
         if (this.getTrumpf().getColor().equals(card.getColor())) {
             Card temp = this.getTrumpf();
             System.out.println("Trumpf: " + this.getTrumpf().getName() + " exchanged to " + card.getName());
@@ -46,7 +47,6 @@ class Deck {
             return card;
         }
     }
-
      */
 
     private Card trumpf(ArrayList<Card> stapel) {

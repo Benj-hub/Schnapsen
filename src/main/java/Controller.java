@@ -8,7 +8,7 @@ class Controller {
 
     //Input for tricks
     ArrayList<Port> ports = new ArrayList<>();
-    protected Deck deck = new Deck();
+    Deck deck = new Deck();
     //collecting players
     private ArrayList<Player> players = new ArrayList<>();
     private boolean gameRuns = true;
@@ -33,24 +33,24 @@ class Controller {
         return false;
     }
 
-    public Deck getDeck() {
+    Deck getDeck() {
         return deck;
     }
 
-    public boolean isGameRuns() {
+    boolean isGameRuns() {
         return gameRuns;
     }
 
-    public ArrayList<Port> getPorts() {
+    ArrayList<Port> getPorts() {
         return ports;
     }
 
-    public ArrayList<Player> getPlayers() {
+    ArrayList<Player> getPlayers() {
         return players;
     }
 
-    protected boolean gameRuns() {
-        return this.gameRuns = false;
+    private void gameRuns() {
+        this.gameRuns = false;
     }
 
     void addScore(Player player) {
@@ -89,9 +89,9 @@ class Controller {
     }
 
     private void NPCsCountCards() {
-        for ( Port p : ports) {
-            if (p.getPlayer().getName().equals("machine")){
-                p.getPlayer().countCards(p);
+        for (Player player : players) {
+            for (Port port : ports) {
+            player.countCards(port);
             }
         }
     }
@@ -117,13 +117,16 @@ class Controller {
         return winCard.getPlayer();
     }
 
+    /*
     protected void printPlayerscore(){
         for (Player p : players) {
             System.out.println(p.getName() + ": " + p.getScore());
         }
     }
 
-    public void endingGame(Player p) {
+     */
+
+    protected void endingGame(Player p) {
         gameRuns();
         Player winPlayer = p;
         for (Player temp : players) {
@@ -189,13 +192,7 @@ class Controller {
 
             String otherPlayer = "machine";//scanner.next();
 
-            if (otherPlayer.equals("human")) {
-
-                players.add(new HumanPlayer(this));
-
-            } else {
-                players.add(new NPC(i + 1, this));
-            }
+            players.add(new NPC(i + 1, this));
         }
         Collections.shuffle(players);
     }

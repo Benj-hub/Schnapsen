@@ -85,7 +85,6 @@ public abstract class Player {
         } else {
             System.out.println(card.getName() + " doesn't match");
         }
-        playerAction();
     }
 
     protected void printCardToThrow(Integer i) {
@@ -103,7 +102,7 @@ public abstract class Player {
         }
     }
 
-    public int getScore() {
+    protected int getScore() {
         return score;
     }
 
@@ -111,27 +110,21 @@ public abstract class Player {
         this.score = score;
     }
 
-    public String getName() {
+    protected String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public ArrayList<Card> getPreviousTricks() {
+    protected ArrayList<Card> getPreviousTricks() {
         return previousTricks;
     }
 
-    public void setPreviousTricks(ArrayList<Card> previousTricks) {
-        this.previousTricks = previousTricks;
-    }
 
-    public ArrayList<Card> getCardsInHand() {
+    protected ArrayList<Card> getCardsInHand() {
         return cardsInHand;
     }
 
-    public void setCardsInHand(ArrayList<Card> cardsInHand) {
+    protected void setCardsInHand(ArrayList<Card> cardsInHand) {
         this.cardsInHand = cardsInHand;
     }
 

@@ -10,10 +10,7 @@ public class Card {
         this.name = name;
     }
 
-    public Card(String name, String color, int
-
-
-            value) {
+    public Card(String name, String color, int value) {
         this.name = name;
         this.value = value;
         this.color = color;

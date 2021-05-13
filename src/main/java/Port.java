@@ -6,15 +6,15 @@ public class Port {
     private Player player;
     private Card card;
 
-    public Player getPlayer() {
+    protected Player getPlayer() {
         return player;
     }
 
-    public Card getCard() {
+    protected Card getCard() {
         return card;
     }
 
-    public Port(Player player, Card card) {
+    protected Port(Player player, Card card) {
         this.player = player;
         this.card = card;
     }

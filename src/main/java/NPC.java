@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 public class NPC extends Player {
 
@@ -24,8 +25,22 @@ public class NPC extends Player {
 
     @Override
     protected Port playerAction() {
-        couldBeInOthersHand();
         Port cardOutput;
+
+        System.out.println("count HERZ");
+        System.out.println(countHerz.size());
+        for (Card c : countHerz) {
+            System.out.println(c.getName());
+        }
+        System.out.println("count HERZ END");
+        System.out.println();
+        System.out.println("thrown Cards");
+        for (Card c : thrownCards) {
+            System.out.println(c.getName());
+        }
+        System.out.println("thrown Cards END");
+        System.out.println();
+
         //checking if NPC is on turn
         if (controller.ports.size() == 0) {
             endingGame();
@@ -105,7 +120,7 @@ public class NPC extends Player {
         }
     }
 
-    public Card throwFirstCard() {
+    private Card throwFirstCard() {
         if (66 <= (possiblePoints()) + score) {
             return gainPointsLooseCards();
         } else {
@@ -113,9 +128,8 @@ public class NPC extends Player {
         }
     }
 
-    public Card throwAnswer() {
+    private Card throwAnswer() {
         throwCard.clear();
-        Card master = controller.getPorts().get(0).getCard();
         for (Card card : getCardsInHand()) {
             if (conditionsToTrickCard(card)) {
                 throwCard.add(card);
@@ -160,9 +174,8 @@ public class NPC extends Player {
         }
     }
 
-    private ArrayList<Card> thrownCards(Card card) {
+    private void thrownCards(Card card) {
         thrownCards.add(card);
-        return thrownCards;
     }
 
     private int possiblePoints() {
@@ -290,6 +303,7 @@ public class NPC extends Player {
                 countTrumpfCards = null;
         }
 
+        assert false;
         if (countTrumpfCards.size() == 0) {
             if (countHerz.size() == 0) {
                 herzSaveToPlay = true;
@@ -328,13 +342,15 @@ public class NPC extends Player {
         ArrayList<Card> deckInGame = deck.getStapel();
         for (Card card : deckInGame) {
             ArrayList<Card> temp = filterCards(card);
+            assert temp != null;
             temp.add(card);
         }
     }
 
     private void couldBeInOthersHandRefresh(Card card) {
-        ArrayList<Card> temp = filterCards(card);
-        temp.remove(card);
+        Objects.requireNonNull(filterCards(card)).remove(card);
+        System.out.println("to be removed " + card.getName());
+
     }
 
     @Override

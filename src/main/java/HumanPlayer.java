@@ -4,7 +4,7 @@ import java.util.Scanner;
 public class HumanPlayer extends Player {
     private Scanner scanner = new Scanner(System.in);
 
-    public HumanPlayer(Controller controller) {
+    HumanPlayer(Controller controller) {
         super(controller);
 
         System.out.println("Hello there!");
@@ -30,7 +30,7 @@ public class HumanPlayer extends Player {
     }
 
     protected Card playerActionExecution() {
-        Card card = null;
+        Card card;
         //System.out.println("started playerActionExecution");
 
         try {
@@ -74,9 +74,7 @@ public class HumanPlayer extends Player {
         } catch (InputMismatchException input) {
             System.out.println("Input couldn't be read: " + input.getMessage());
         }
-        if (card == null){
-            card = playerActionExecution();
-        }
+        card = playerActionExecution();
         return card;
     }
 

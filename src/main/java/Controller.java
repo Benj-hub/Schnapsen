@@ -12,6 +12,8 @@ class Controller {
     //collecting players
     private ArrayList<Player> players = new ArrayList<>();
     private boolean gameRuns = true;
+    protected ArrayList<Player> teamOne = new ArrayList<>();
+    protected ArrayList<Player> teamTwo = new ArrayList<>();
 
     Controller() {
         deck.dealDeck();
@@ -195,6 +197,14 @@ class Controller {
             players.add(new NPC(i + 1, this));
         }
         Collections.shuffle(players);
+
+        for (int i = 0; i < players.size(); i++) {
+            if (i / 2 != 0) {
+                teamOne.add(players.get(i));
+            } else {
+                teamTwo.add(players.get(i));
+            }
+        }
     }
 
     private void dealCards() {

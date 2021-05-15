@@ -4,18 +4,14 @@ import java.util.Objects;
 
 public class NPC extends Player {
 
-    private ArrayList<Card> thrownCards = new ArrayList<>();
+    private ArrayList<Port> thrownCards = new ArrayList<>();
     private ArrayList<Card> throwCard = new ArrayList<>();
-    private boolean herzSaveToPlay = false;
-    private boolean karoSaveToPlay = false;
-    private boolean pikSaveToPlay = false;
-    private boolean kreuzSaveToPlay = false;
     private ArrayList<Card> countHerz = new ArrayList<>();
     private ArrayList<Card> countKaro = new ArrayList<>();
     private ArrayList<Card> countPik = new ArrayList<>();
     private ArrayList<Card> countKreuz = new ArrayList<>();
     private String trumpf = controller.deck.getTrumpf().getColor();
-    private ArrayList<Card> countTrumpfCards;
+    private ArrayList<Card> countTrumpfCards = filterCards(controller.deck.getTrumpf());
 
     NPC(int i, Controller controller) {
         super(controller);
@@ -25,21 +21,8 @@ public class NPC extends Player {
 
     @Override
     protected Port playerAction() {
+        throwCard.clear();
         Port cardOutput;
-
-        System.out.println("count HERZ");
-        System.out.println(countHerz.size());
-        for (Card c : countHerz) {
-            System.out.println(c.getName());
-        }
-        System.out.println("count HERZ END");
-        System.out.println();
-        System.out.println("thrown Cards");
-        for (Card c : thrownCards) {
-            System.out.println(c.getName());
-        }
-        System.out.println("thrown Cards END");
-        System.out.println();
 
         //checking if NPC is on turn
         if (controller.ports.size() == 0) {
@@ -120,16 +103,7 @@ public class NPC extends Player {
         }
     }
 
-    private Card throwFirstCard() {
-        if (66 <= (possiblePoints()) + score) {
-            return gainPointsLooseCards();
-        } else {
-            return gainPointsSaveCards();
-        }
-    }
-
     private Card throwAnswer() {
-        throwCard.clear();
         for (Card card : getCardsInHand()) {
             if (conditionsToTrickCard(card)) {
                 throwCard.add(card);
@@ -140,6 +114,39 @@ public class NPC extends Player {
         }
         Collections.shuffle(throwCard);
         return throwCard.get(0);
+    }
+
+    private Card throwFirstCard() {
+        for (Card card : cardsInHand) {
+            advancedConditionsToThrowCard(card);
+        }
+        System.out.println("no advanced throw first Card");
+        if (throwCard.isEmpty()) {
+            simpleConditionsToThrowCard();
+        }
+        if (throwCard.size() == 0){
+            System.out.println("throwCard is EMPTY");
+        }
+        Collections.shuffle(throwCard);
+        return throwCard.get(0);
+    }
+
+    private void playHigh() {
+        Card temp = cardsInHand.get(0);
+        for (Card card : cardsInHand) {
+            if (card.getValue() > temp.getValue())
+                temp = card;
+        }
+        throwCard.add(temp);
+    }
+
+    private void playLow() {
+        Card temp = cardsInHand.get(0);
+        for (Card card : cardsInHand) {
+            if (card.getValue() < temp.getValue())
+                temp = card;
+        }
+        throwCard.add(temp);
     }
 
     private boolean conditionsToTrickCard(Card card) {
@@ -175,16 +182,16 @@ public class NPC extends Player {
     }
 
     private void thrownCards(Card card) {
-        thrownCards.add(card);
+        thrownCards.add(new Port(this, card));
     }
 
     private int possiblePoints() {
         int possiblePoints = 0;
         int thrownpoints = 0;
 
-        for (Card c : thrownCards) {
-            if (c.getValue() > 9) {
-                thrownpoints += c.getValue();
+        for (Port c : thrownCards) {
+            if (c.getCard().getValue() > 9) {
+                thrownpoints += c.getCard().getValue();
             }
             possiblePoints = 108 - thrownpoints;
 
@@ -192,132 +199,62 @@ public class NPC extends Player {
         return possiblePoints;
     }
 
-    private Card gainPointsSaveCards() {
-        throwCard.clear();
-        for (Card c : getCardsInHand()) {
-            if (c.getValue() < 10) {
-                throwCard.add(c);
-            }
-            if (c.getValue() == 2) {
-                return c;
-            }
-        }
-        if (throwCard.isEmpty()) {
-            for (Card c : cardsInHand) {
-                if (c.getValue() == 11) {
-                    throwCard.add(c);
-                } else {
-                    throwCard.add(cardsInHand.get(0));
-                }
+    private String playerCouldntmatchCard() {
+        for (int i = thrownCards.size()-1; i > controller.getPlayers().size(); i--) {
+            Card dealCard = thrownCards.get(controller.getPlayers().size()-1).getCard();
+            Player temp = thrownCards.get(i).getPlayer();
+            if (notInMyTeam(temp) && !thrownCards.get(i).getCard().getColor().equals(dealCard.getColor())) {
+                System.out.println(throwCard.get(i).getName() + " failed to match Card");
+                System.out.println("throw " + thrownCards.get(i).getCard() + " to gain points");
+                return dealCard.getColor();
             }
         }
-
-        Collections.shuffle(throwCard);
-        return throwCard.get(0);
-    }
-
-    private Card gainPointsLooseCards() {
-        ArrayList<Card> throwCard = new ArrayList<>();
-        for (Card card : cardsInHand) {
-
-            if (card.getColor().equals("herz") && herzSaveToPlay) {
-                throwCard.add(card);
-            }
-            if (card.getColor().equals("karo") && karoSaveToPlay) {
-                throwCard.add(card);
-            }
-            if (card.getColor().equals("pik") && pikSaveToPlay) {
-                throwCard.add(card);
-            }
-            if (card.getColor().equals("kreuz") && kreuzSaveToPlay) {
-                throwCard.add(card);
-            }
-
-        }
-        if (throwCard.isEmpty()) {
-            return gainPointsSaveCards();
-        }
-        Collections.shuffle(throwCard);
-        return throwCard.get(0);
-    }
-
-    private String playerCouldntmatchCard(ArrayList<Card> ports) {
-        /*
-        for (int i = thrownCards.size(); i < controller.getPlayers().size(); i--) {
-            if (!thrownCards.get(thrownCards.size()-1).equals(thrownCards.get(i / 2))) {
-                System.out.println("throw " + thrownCards.get(i / 2).getColor() + " to gain points");
-                return thrownCards.get(i / 2).getColor();
-            }
-        }
-
-         */
         return null;
     }
 
-    private boolean advancedConditionsToThrowCard(Card card) {
-        boolean trumpfisGone = countTrumpfCards.size() == 0;
-        boolean isntTrumpf = !card.getColor().equals(trumpf);
-
-        switch (card.getColor()) {
-            case "herz":
-                for (Card c : countHerz) {
-                    if (c.getValue() > card.getValue()) {
-                        return false;
-                    }
-                }
-            case "karo":
-                for (Card c : countKaro) {
-                    if (c.getValue() > card.getValue()) {
-                        return false;
-                    }
-                }
-            case "pik":
-                for (Card c : countPik) {
-                    if (c.getValue() > card.getValue()) {
-                        return false;
-                    }
-                }
-            case "kreuz":
-                for (Card c : countKreuz) {
-                    if (c.getValue() > card.getValue()) {
-                        return false;
-                    }
-                }
+    private boolean notInMyTeam(Player player) {
+        for (Player p : notMyTeam()) {
+            if (p.equals(player)) {
+                return true;
+            }
         }
-        return trumpfisGone && isntTrumpf;
+        return false;
     }
 
-    private void saveToPlay() {
-
-        switch (trumpf) {
-            case "herz":
-                countTrumpfCards = countHerz;
-            case "karo":
-                countTrumpfCards = countKaro;
-            case "pik":
-                countTrumpfCards = countPik;
-            case "kreuz":
-                countTrumpfCards = countKreuz;
-            default:
-                System.out.println("no trumpf card!");
-                countTrumpfCards = null;
+    private void simpleConditionsToThrowCard() {
+        if (66 <= (possiblePoints()) + score) {
+            playHigh();
         }
+        playLow();
+    }
 
-        assert false;
-        if (countTrumpfCards.size() == 0) {
-            if (countHerz.size() == 0) {
-                herzSaveToPlay = true;
+    private void advancedConditionsToThrowCard(Card card) {
+        boolean trumpfisGone = countTrumpfCards.isEmpty();
+        boolean isntTrumpf = !card.getColor().equals(trumpf);
+        boolean highestCardInStack = card.getValue() == getHighestCardInStack(card).getValue();
+
+        if (saveToPlay(card)) {
+            throwCard.add(card);
+        } else if (trumpfisGone && isntTrumpf && highestCardInStack) {
+                throwCard.add(card);
+            } else if (Objects.equals(playerCouldntmatchCard(), card.getColor())) {
+        throwCard.add(card);
+    } else if (highestCardInStack) {
+                    throwCard.add(card);
+                }
             }
-            if (countKaro.size() == 0) {
-                karoSaveToPlay = true;
-            }
-            if (countPik.size() == 0) {
-                pikSaveToPlay = true;
-            }
-            if (countKreuz.size() == 0) {
-                kreuzSaveToPlay = true;
+
+    private Card getHighestCardInStack(Card master) {
+        for (Card slave : cardsInHand) {
+            if (slave.getValue() > master.getValue()) {
+                master = slave;
             }
         }
+        return master;
+    }
+
+    private boolean saveToPlay(Card card) {
+        return Objects.requireNonNull(filterCards(card)).size() == 0 && !filterCards(card).equals(countTrumpfCards);
     }
 
     private ArrayList<Card> filterCards(Card card) {
@@ -341,21 +278,39 @@ public class NPC extends Player {
         Deck deck = new Deck();
         ArrayList<Card> deckInGame = deck.getStapel();
         for (Card card : deckInGame) {
-            ArrayList<Card> temp = filterCards(card);
-            assert temp != null;
-            temp.add(card);
+            Objects.requireNonNull(filterCards(card)).add(card);
+        }
+
+        for (Card card : cardsInHand) {
+            Objects.requireNonNull(filterCards(card)).remove(card);
         }
     }
 
     private void couldBeInOthersHandRefresh(Card card) {
         Objects.requireNonNull(filterCards(card)).remove(card);
-        System.out.println("to be removed " + card.getName());
-
     }
 
     @Override
     protected void countCards(Port port) {
         couldBeInOthersHandRefresh(port.getCard());
         thrownCards(port.getCard());
+    }
+
+    private ArrayList<Player> myTeam() {
+        for (Player player : controller.teamOne) {
+            if (player.equals(this)){
+                return controller.teamOne;
+            }
+        }
+        return controller.teamTwo;
+    }
+
+    private ArrayList<Player> notMyTeam() {
+        for (Player player : controller.teamOne) {
+            if (player.equals(this)){
+                return controller.teamTwo;
+            }
+        }
+        return controller.teamOne;
     }
 }

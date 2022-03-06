@@ -38,11 +38,11 @@ public class NPC extends Player {
                 executePairs(pairs);
                 cardOutput = new PlayerCard(this, throwCard(pairs));
             } else {
-                System.out.println("throw first card");
+                //System.out.println("throw first card");
                 cardOutput = new PlayerCard(this, throwCard(throwFirstCard()));
             }
         } else {
-            System.out.println("throw answer");
+            //System.out.println("throw answer");
             cardOutput = new PlayerCard(this, throwCard(throwAnswer()));
         }
         drawCard();
@@ -199,8 +199,8 @@ public class NPC extends Player {
         for (int i = thrownCards.size()-1; i > controller.getPlayers().size(); i--) {
             Card dealCard = thrownCards.get(controller.getPlayers().size()-1).getCard();
             if (!thrownCards.get(i).getCard().getColor().equals(dealCard.getColor())) {
-                System.out.println(throwCard.get(i).getName() + " failed to match Card");
-                System.out.println("throw " + thrownCards.get(i).getCard() + " to gain points");
+                //System.out.println(throwCard.get(i).getName() + " failed to match Card");
+                //System.out.println("throw " + thrownCards.get(i).getCard() + " to gain points");
                 return dealCard.getColor();
             }
         }

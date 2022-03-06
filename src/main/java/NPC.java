@@ -120,12 +120,8 @@ public class NPC extends Player {
         for (Card card : cardsInHand) {
             advancedConditionsToThrowCard(card);
         }
-        System.out.println("no advanced throw first Card");
         if (throwCard.isEmpty()) {
             simpleConditionsToThrowCard();
-        }
-        if (throwCard.size() == 0){
-            System.out.println("throwCard is EMPTY");
         }
         Collections.shuffle(throwCard);
         return throwCard.get(0);

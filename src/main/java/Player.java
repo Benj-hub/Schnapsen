@@ -40,9 +40,8 @@ public abstract class Player {
     protected Card throwCard(Card card) {
         System.out.println(Fonts.GREEN_BOLD + name + " threw: " + card.getName() + Fonts.RESET);
 
-        Card temp = card;
         cardsInHand.remove(card);
-        return temp;
+        return card;
     }
 
     protected boolean cardMatchesPair(Card master, Card slave) {
@@ -93,7 +92,7 @@ public abstract class Player {
 
         if (controller.playerCards.size() > 0) {
             if (controller.checkColour(cardsInHand.get(i))) {
-                System.out.println(Fonts.BLACK_BOLD + "Action " + (action) + ": Throw " + cardsInHand.get(i).getName() + Fonts.RESET);
+                System.out.println(Fonts.GREEN_BOLD + "Action " + (action) + ": Throw " + cardsInHand.get(i).getName() + Fonts.RESET);
             } else {
                 System.out.println("Action " + (action) + ": Throw " + cardsInHand.get(i).getName());
             }

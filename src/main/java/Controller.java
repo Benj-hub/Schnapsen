@@ -10,7 +10,7 @@ class Controller {
     ArrayList<PlayerCard> playerCards = new ArrayList<>();
     Deck deck = new Deck();
     //collecting players
-    private ArrayList<Player> players = new ArrayList<>();
+    private final ArrayList<Player> players = new ArrayList<>();
     private boolean gameRuns = true;
     protected ArrayList<Player> teamOne = new ArrayList<>();
     protected ArrayList<Player> teamTwo = new ArrayList<>();
@@ -182,20 +182,10 @@ class Controller {
     }
 
     private void createOtherPlayer() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("you will play against the Machine!");
-
-        int anzahlSpieler = 1; //scanner.nextInt();
-        for (int i = 0; i < anzahlSpieler; i++) {
-            //System.out.println("Is Player" + (i + 2) + " another Human or a Machine?");
-            //System.out.println("write: human");
-            //System.out.println("write: machine");
-
             String otherPlayer = "machine";//scanner.next();
 
-            players.add(new NPC(i + 1, this));
-        }
+            players.add(new NPC( 1, this));
+
         Collections.shuffle(players);
 
         for (int i = 0; i < players.size(); i++) {

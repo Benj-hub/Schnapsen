@@ -16,7 +16,6 @@ public class main {
             }
                 player = controller.tricks();
                 controller.addScore(player);
-                //controller.printPlayerscore();
                 controller.getPorts().clear();
             if (controller.isNoCardsInHand()){
                 controller.endingGame(player);

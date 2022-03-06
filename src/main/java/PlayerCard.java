@@ -3,8 +3,8 @@
 import java.util.Objects;
 
 public class PlayerCard {
-    private Player player;
-    private Card card;
+    private final Player player;
+    private final Card card;
 
     protected Player getPlayer() {
         return player;

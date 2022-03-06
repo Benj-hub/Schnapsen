@@ -4,13 +4,9 @@ import java.util.Objects;
 
 public class Card {
 
-    private String name;
+    private final String name;
     private int value;
-    private String color;
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private final String color;
 
     public Card(String name, String color, int value) {
         this.name = name;

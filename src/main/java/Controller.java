@@ -2,7 +2,6 @@
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
 
 class Controller {
 
@@ -119,15 +118,6 @@ class Controller {
         return winCard.getPlayer();
     }
 
-    /*
-    protected void printPlayerscore(){
-        for (Player p : players) {
-            System.out.println(p.getName() + ": " + p.getScore());
-        }
-    }
-
-     */
-
     protected void endingGame(Player p) {
         gameRuns();
         Player winPlayer = p;
@@ -182,8 +172,6 @@ class Controller {
     }
 
     private void createOtherPlayer() {
-            String otherPlayer = "machine";//scanner.next();
-
             players.add(new NPC( 1, this));
 
         Collections.shuffle(players);

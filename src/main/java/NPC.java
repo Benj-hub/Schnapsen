@@ -198,23 +198,13 @@ public class NPC extends Player {
     private String playerCouldntmatchCard() {
         for (int i = thrownCards.size()-1; i > controller.getPlayers().size(); i--) {
             Card dealCard = thrownCards.get(controller.getPlayers().size()-1).getCard();
-            Player temp = thrownCards.get(i).getPlayer();
-            if (notInMyTeam(temp) && !thrownCards.get(i).getCard().getColor().equals(dealCard.getColor())) {
+            if (!thrownCards.get(i).getCard().getColor().equals(dealCard.getColor())) {
                 System.out.println(throwCard.get(i).getName() + " failed to match Card");
                 System.out.println("throw " + thrownCards.get(i).getCard() + " to gain points");
                 return dealCard.getColor();
             }
         }
         return null;
-    }
-
-    private boolean notInMyTeam(Player player) {
-        for (Player p : notMyTeam()) {
-            if (p.equals(player)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void simpleConditionsToThrowCard() {
@@ -290,23 +280,5 @@ public class NPC extends Player {
     protected void countCards(PlayerCard playerCard) {
         couldBeInOthersHandRefresh(playerCard.getCard());
         thrownCards(playerCard.getCard());
-    }
-
-    private ArrayList<Player> myTeam() {
-        for (Player player : controller.teamOne) {
-            if (player.equals(this)){
-                return controller.teamOne;
-            }
-        }
-        return controller.teamTwo;
-    }
-
-    private ArrayList<Player> notMyTeam() {
-        for (Player player : controller.teamOne) {
-            if (player.equals(this)){
-                return controller.teamTwo;
-            }
-        }
-        return controller.teamOne;
     }
 }

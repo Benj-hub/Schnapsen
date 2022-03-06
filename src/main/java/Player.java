@@ -113,12 +113,6 @@ public abstract class Player {
         return name;
     }
 
-
-    protected ArrayList<Card> getPreviousTricks() {
-        return previousTricks;
-    }
-
-
     protected ArrayList<Card> getCardsInHand() {
         return cardsInHand;
     }

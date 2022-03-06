@@ -9,18 +9,18 @@ class Deck {
     private final String DB_DECK = "DoppelDeutscheKarten.db";
     private final String CONNECTION_STRING = "jdbc:sqlite::resource:" + DB_DECK;
 
-    private Card trumpf;
-    private String trumpfColor;
-    private ArrayList<Card> stapel;
+    private Card trump;
+    private String trumpColor;
+    private final ArrayList<Card> deck;
 
     public Deck() {
-        stapel = collectStapel(new ArrayList<Card>());
+        deck = collectStapel(new ArrayList<Card>());
     }
 
     protected void dealDeck (){
-        Collections.shuffle(stapel);
-        trumpf = trumpf(stapel);
-        trumpfColor = trumpf.getColor();
+        Collections.shuffle(deck);
+        trump = trumpf(deck);
+        trumpColor = trump.getColor();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
@@ -29,25 +29,25 @@ class Deck {
     }
 
     public void blockStapel() {
-        ArrayList<Card> tempStapel = new ArrayList<>(stapel);
+        ArrayList<Card> tempStapel = new ArrayList<>(deck);
         for (Card c : tempStapel) {
-            stapel.remove(c);
+            deck.remove(c);
         }
     }
 
-    /*
-    public Card trumpfChange(Card card) {
-        if (this.getTrumpf().getColor().equals(card.getColor())) {
-            Card temp = this.getTrumpf();
-            System.out.println("Trumpf: " + this.getTrumpf().getName() + " exchanged to " + card.getName());
-            trumpf = card;
+
+    public Card trumpChange(Card card) {
+        if (this.getTrump().getColor().equals(card.getColor())) {
+            Card temp = this.getTrump();
+            System.out.println("Trumpf: " + this.getTrump().getName() + " exchanged to " + card.getName());
+            trump = card;
             return temp;
         } else {
             System.out.println("Cannot change Trumpf");
             return card;
         }
     }
-     */
+
 
     private Card trumpf(ArrayList<Card> stapel) {
         Card card = stapel.get(0);
@@ -105,19 +105,19 @@ class Deck {
         return stapel;
     }
 
-    public Card getTrumpf() {
-        return trumpf;
+    public Card getTrump() {
+        return trump;
     }
 
-    public String getTrumpfColor() {
-        return trumpfColor;
+    public String getTrumpColor() {
+        return trumpColor;
     }
 
-    public ArrayList<Card> getStapel() {
-        return stapel;
+    public ArrayList<Card> getDeck() {
+        return deck;
     }
 
-    public void setTrumpf(Card trumpf) {
-        this.trumpf = trumpf;
+    public void setTrump(Card trumpf) {
+        this.trump = trumpf;
     }
 }

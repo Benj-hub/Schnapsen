@@ -21,7 +21,7 @@ public abstract class Player {
         this.cardsInHand = new ArrayList<>();
     }
 
-    protected abstract Port playerAction();
+    protected abstract PlayerCard playerAction();
 
     protected abstract Card playerActionExecution();
 
@@ -46,28 +46,28 @@ public abstract class Player {
     }
 
     protected boolean cardMatchesPair(Card master, Card slave) {
-        boolean cardIsKoeningOrDame = master.getValue() == 4 || master.getValue() == 3;
-        boolean slaveIsKoenigOrDame = slave.getValue() == 4 || slave.getValue() == 3;
+        boolean cardIsKingOrQueen = master.getValue() == 4 || master.getValue() == 3;
+        boolean slaveIsKingOrQueen = slave.getValue() == 4 || slave.getValue() == 3;
         boolean matchesColour = master.getColor().equals(slave.getColor());
         boolean isDifferentCard = !master.equals(slave);
 
-        return cardIsKoeningOrDame && slaveIsKoenigOrDame && matchesColour && isDifferentCard;
+        return cardIsKingOrQueen && slaveIsKingOrQueen && matchesColour && isDifferentCard;
     }
 
     private void drawNewCard() {
-        cardsInHand.add(controller.deck.getStapel().get(0));
-        controller.deck.getStapel().remove(controller.deck.getStapel().get(0));
+        cardsInHand.add(controller.deck.getDeck().get(0));
+        controller.deck.getDeck().remove(controller.deck.getDeck().get(0));
     }
 
-    private void drawTrumpf() {
-        cardsInHand.add(controller.deck.getTrumpf());
-        controller.deck.setTrumpf(null);
+    private void drawTrump() {
+        cardsInHand.add(controller.deck.getTrump());
+        controller.deck.setTrump(null);
     }
 
     protected void drawCard() {
-        if (controller.deck.getStapel().size() == 0) {
-            if (controller.deck.getTrumpf() != null) {
-                drawTrumpf();
+        if (controller.deck.getDeck().size() == 0) {
+            if (controller.deck.getTrump() != null) {
+                drawTrump();
             }
             System.out.println(Fonts.YELLOW_BOLD + "Stapel is empty!" + Fonts.RESET);
         } else {
@@ -76,9 +76,9 @@ public abstract class Player {
     }
 
     protected void changeTrumpfCard(Card card) {
-        if (card.getColor().equals(controller.getDeck().getTrumpf().getColor()) && card.getValue() == 2) {
-            cardsInHand.add(controller.deck.getTrumpf());
-            controller.deck.setTrumpf(card);
+        if (card.getColor().equals(controller.getDeck().getTrump().getColor()) && card.getValue() == 2) {
+            cardsInHand.add(controller.deck.getTrump());
+            controller.deck.setTrump(card);
             getCardsInHand().remove(card);
             System.out.println(name + " gets Trump Card.");
             System.out.println("Trump changed to " + card.getName());
@@ -91,7 +91,7 @@ public abstract class Player {
 
         int action = i + 1;
 
-        if (controller.ports.size() > 0) {
+        if (controller.playerCards.size() > 0) {
             if (controller.checkColour(cardsInHand.get(i))) {
                 System.out.println(Fonts.BLACK_BOLD + "Action " + (action) + ": Throw " + cardsInHand.get(i).getName() + Fonts.RESET);
             } else {
@@ -128,5 +128,5 @@ public abstract class Player {
         this.cardsInHand = cardsInHand;
     }
 
-    protected abstract void countCards(Port port);
+    protected abstract void countCards(PlayerCard playerCard);
 }

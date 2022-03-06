@@ -8,7 +8,7 @@ public class HumanPlayer extends Player {
         super(controller);
 
         System.out.println("Hello there!");
-        System.out.println("name: ");
+        System.out.print("name: ");
         name = scanner.nextLine();
         if (name.equals("")) {
             name = "General Kenobi";
@@ -23,10 +23,10 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    protected Port playerAction() {
+    protected PlayerCard playerAction() {
         //System.out.println("started playerAction");
         playerActionOptions();
-        return new Port(this, playerActionExecution());
+        return new PlayerCard(this, playerActionExecution());
     }
 
     protected Card playerActionExecution() {
@@ -40,12 +40,12 @@ public class HumanPlayer extends Player {
                 drawCard();
                 card = throwCard(i);
                 return card;
-            } else if (controller.ports.size() != 0) {
+            } else if (controller.playerCards.size() != 0) {
                 System.out.println("You have to deal to make that action!");
             }
             switch (i) {
                 case 6:
-                    if (controller.ports.size() == 0) {
+                    if (controller.playerCards.size() == 0) {
                         Card temp = callPairs();
                         if (temp != null) {
                             return throwCard(temp);
@@ -53,13 +53,13 @@ public class HumanPlayer extends Player {
                     }
 
                 case 7:
-                        System.out.println("Which card do you change the Trumpf with?");
+                        System.out.println("Which card do you change the Trump with?");
                         showCardsToThrow();
                         i = scanner.nextInt();
                         changeTrumpfCard(getCardsInHand().get(i-1));
                         break;
                 case 8:
-                        if (controller.getDeck().getStapel().size() > 0) {
+                        if (controller.getDeck().getDeck().size() > 0) {
                             System.out.println(name + " blocked the Stapel");
                             controller.deck.blockStapel();
                             System.out.println("What action shall follow?");
@@ -103,13 +103,13 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    protected void countCards(Port port) {
+    protected void countCards(PlayerCard playerCard) {
 
     }
 
     private boolean checkPair(Card master, Card slave) {
         if (cardMatchesPair(master, slave)) {
-            if (controller.deck.getTrumpfColor().equals(master.getColor())) {
+            if (controller.deck.getTrumpColor().equals(master.getColor())) {
                 score += 40;
                 System.out.println("40 Points for Griff... *cough* " + name + "!");
             } else {
@@ -128,13 +128,13 @@ public class HumanPlayer extends Player {
 
         showCardsToThrow();
 
-        if (controller.ports.size() == 0) {
+        if (controller.playerCards.size() == 0) {
             System.out.println("Action 6: Call Pairs");
 
-            System.out.println("Action 7: Change the Trumpfcard");
+            System.out.println("Action 7: Change the Trump Card");
 
-            if (controller.deck.getStapel().size() > 0) {
-                System.out.println("Action 8: Block the stapel");
+            if (controller.deck.getDeck().size() > 0) {
+                System.out.println("Action 8: Block the deck");
             }
             System.out.println("Action 9: Bet on ending the Game and start counting!");
 

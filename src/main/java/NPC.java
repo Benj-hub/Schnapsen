@@ -4,14 +4,14 @@ import java.util.Objects;
 
 public class NPC extends Player {
 
-    private ArrayList<Port> thrownCards = new ArrayList<>();
-    private ArrayList<Card> throwCard = new ArrayList<>();
-    private ArrayList<Card> countHerz = new ArrayList<>();
-    private ArrayList<Card> countKaro = new ArrayList<>();
-    private ArrayList<Card> countPik = new ArrayList<>();
-    private ArrayList<Card> countKreuz = new ArrayList<>();
-    private String trumpf = controller.deck.getTrumpf().getColor();
-    private ArrayList<Card> countTrumpfCards = filterCards(controller.deck.getTrumpf());
+    private final ArrayList<PlayerCard> thrownCards = new ArrayList<>();
+    private final ArrayList<Card> throwCard = new ArrayList<>();
+    private final ArrayList<Card> countHearts = new ArrayList<>();
+    private final ArrayList<Card> countDiamond = new ArrayList<>();
+    private final ArrayList<Card> countSpade = new ArrayList<>();
+    private final ArrayList<Card> countCross = new ArrayList<>();
+    private final String trumpf = controller.deck.getTrump().getColor();
+    private final ArrayList<Card> countTrumpCards = filterCards(controller.deck.getTrump());
 
     NPC(int i, Controller controller) {
         super(controller);
@@ -20,15 +20,15 @@ public class NPC extends Player {
     }
 
     @Override
-    protected Port playerAction() {
+    protected PlayerCard playerAction() {
         throwCard.clear();
-        Port cardOutput;
+        PlayerCard cardOutput;
 
         //checking if NPC is on turn
-        if (controller.ports.size() == 0) {
+        if (controller.playerCards.size() == 0) {
             endingGame();
             blockStapel();
-            //check if NPC should change Trumpf
+            //check if NPC should change Trump
             Card card = lookToChangeTrumpCard();
             if (card != null) {
                 changeTrumpfCard(card);
@@ -36,21 +36,21 @@ public class NPC extends Player {
             Card pairs = callPairs();
             if (pairs != null) {
                 executePairs(pairs);
-                cardOutput = new Port(this, throwCard(pairs));
+                cardOutput = new PlayerCard(this, throwCard(pairs));
             } else {
                 System.out.println("throw first card");
-                cardOutput = new Port(this, throwCard(throwFirstCard()));
+                cardOutput = new PlayerCard(this, throwCard(throwFirstCard()));
             }
         } else {
             System.out.println("throw answer");
-            cardOutput = new Port(this, throwCard(throwAnswer()));
+            cardOutput = new PlayerCard(this, throwCard(throwAnswer()));
         }
         drawCard();
         return cardOutput;
     }
 
     private Card lookToChangeTrumpCard() {
-        if (controller.deck.getTrumpf() != null) {
+        if (controller.deck.getTrump() != null) {
             for (Card c : getCardsInHand()) {
                 if (conditionsToChangeTrumpCard(c)) {
                     return c;
@@ -61,7 +61,7 @@ public class NPC extends Player {
     }
 
     private boolean conditionsToChangeTrumpCard(Card card) {
-        boolean cardmatchescolour = card.getColor().equals(controller.deck.getTrumpfColor());
+        boolean cardmatchescolour = card.getColor().equals(controller.deck.getTrumpColor());
         boolean cardIsBube = card.getValue() == 2;
 
         return cardmatchescolour && cardIsBube;
@@ -94,7 +94,7 @@ public class NPC extends Player {
     }
 
     private void executePairs(Card card) {
-        if (controller.deck.getTrumpfColor().equals(card.getColor())) {
+        if (controller.deck.getTrumpColor().equals(card.getColor())) {
             score += 40;
             System.out.println("40 Points for Griff... *cough* " + name + "!");
         } else {
@@ -152,7 +152,7 @@ public class NPC extends Player {
     private boolean conditionsToTrickCard(Card card) {
         boolean cardIsSameColour = controller.getPorts().get(0).getCard().getColor().equals(card.getColor());
         boolean cardIsHigher = controller.getPorts().get(0).getCard().getValue() < card.getValue();
-        boolean cardIsTrump = card.getColor().equals(controller.deck.getTrumpfColor());
+        boolean cardIsTrump = card.getColor().equals(controller.deck.getTrumpColor());
 
         return cardIsSameColour && cardIsHigher && cardIsTrump;
     }
@@ -182,14 +182,14 @@ public class NPC extends Player {
     }
 
     private void thrownCards(Card card) {
-        thrownCards.add(new Port(this, card));
+        thrownCards.add(new PlayerCard(this, card));
     }
 
     private int possiblePoints() {
         int possiblePoints = 0;
         int thrownpoints = 0;
 
-        for (Port c : thrownCards) {
+        for (PlayerCard c : thrownCards) {
             if (c.getCard().getValue() > 9) {
                 thrownpoints += c.getCard().getValue();
             }
@@ -229,7 +229,7 @@ public class NPC extends Player {
     }
 
     private void advancedConditionsToThrowCard(Card card) {
-        boolean trumpfisGone = countTrumpfCards.isEmpty();
+        boolean trumpfisGone = countTrumpCards.isEmpty();
         boolean isntTrumpf = !card.getColor().equals(trumpf);
         boolean highestCardInStack = card.getValue() == getHighestCardInStack(card).getValue();
 
@@ -254,21 +254,21 @@ public class NPC extends Player {
     }
 
     private boolean saveToPlay(Card card) {
-        return Objects.requireNonNull(filterCards(card)).size() == 0 && !filterCards(card).equals(countTrumpfCards);
+        return Objects.requireNonNull(filterCards(card)).size() == 0 && !filterCards(card).equals(countTrumpCards);
     }
 
     private ArrayList<Card> filterCards(Card card) {
         if (card.getColor().equals("herz")) {
-            return countHerz;
+            return countHearts;
         }
         if (card.getColor().equals("karo")) {
-            return countKaro;
+            return countDiamond;
         }
         if (card.getColor().equals("pik")) {
-            return countPik;
+            return countSpade;
         }
         if (card.getColor().equals("kreuz")) {
-            return countKreuz;
+            return countCross;
         }
         System.out.println("Error filter Cards found null!");
         return null;
@@ -276,7 +276,7 @@ public class NPC extends Player {
 
     private void couldBeInOthersHand() {
         Deck deck = new Deck();
-        ArrayList<Card> deckInGame = deck.getStapel();
+        ArrayList<Card> deckInGame = deck.getDeck();
         for (Card card : deckInGame) {
             Objects.requireNonNull(filterCards(card)).add(card);
         }
@@ -291,9 +291,9 @@ public class NPC extends Player {
     }
 
     @Override
-    protected void countCards(Port port) {
-        couldBeInOthersHandRefresh(port.getCard());
-        thrownCards(port.getCard());
+    protected void countCards(PlayerCard playerCard) {
+        couldBeInOthersHandRefresh(playerCard.getCard());
+        thrownCards(playerCard.getCard());
     }
 
     private ArrayList<Player> myTeam() {

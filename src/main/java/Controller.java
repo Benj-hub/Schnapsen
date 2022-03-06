@@ -7,7 +7,7 @@ import java.util.Scanner;
 class Controller {
 
     //Input for tricks
-    ArrayList<Port> ports = new ArrayList<>();
+    ArrayList<PlayerCard> playerCards = new ArrayList<>();
     Deck deck = new Deck();
     //collecting players
     private ArrayList<Player> players = new ArrayList<>();
@@ -23,7 +23,7 @@ class Controller {
         createOtherPlayer();
         dealCards();
 
-        System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + deck.getTrumpf().getName() + Fonts.RESET);
+        System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + deck.getTrump().getName() + Fonts.RESET);
     }
 
     protected boolean isNoCardsInHand(){
@@ -43,8 +43,8 @@ class Controller {
         return gameRuns;
     }
 
-    ArrayList<Port> getPorts() {
-        return ports;
+    ArrayList<PlayerCard> getPorts() {
+        return playerCards;
     }
 
     ArrayList<Player> getPlayers() {
@@ -57,7 +57,7 @@ class Controller {
 
     void addScore(Player player) {
         int newScore = player.getScore();
-        for (Port p : ports) {
+        for (PlayerCard p : playerCards) {
             newScore = newScore + p.getCard().getValue();
         }
         player.setScore(newScore);
@@ -65,7 +65,7 @@ class Controller {
 
     void printCardsOnTable() {
         System.out.println(Fonts.YELLOW_BOLD + "On the Table: " + Fonts.RESET);
-        for (Port p : ports) {
+        for (PlayerCard p : playerCards) {
             System.out.println(Fonts.YELLOW_BOLD + p.getCard().getName() + Fonts.RESET);
         }
     }
@@ -75,9 +75,9 @@ class Controller {
         System.out.println(Fonts.BLUE_BOLD + "Turn ended" + Fonts.RESET);
 
         int i = 1;
-        if (ports.size() > 0) {
+        if (playerCards.size() > 0) {
             for (Player p : players) {
-                if (p.equals(ports.get(ports.size() - 1).getPlayer())) {
+                if (p.equals(playerCards.get(playerCards.size() - 1).getPlayer())) {
                     if (i < players.size()) {
                         return players.get(i);
                     } else {
@@ -92,8 +92,8 @@ class Controller {
 
     private void NPCsCountCards() {
         for (Player player : players) {
-            for (Port port : ports) {
-            player.countCards(port);
+            for (PlayerCard playerCard : playerCards) {
+            player.countCards(playerCard);
             }
         }
     }
@@ -101,10 +101,10 @@ class Controller {
     protected Player tricks() {
         NPCsCountCards();
         //System.out.println(Fonts.RED_BOLD + "started tricks" + Fonts.RESET);
-        Port temp;
-        Port winCard = ports.get(0);
-        for (Port port : ports) {
-            temp = conditionsToTrickCard(winCard, port);
+        PlayerCard temp;
+        PlayerCard winCard = playerCards.get(0);
+        for (PlayerCard playerCard : playerCards) {
+            temp = conditionsToTrickCard(winCard, playerCard);
             winCard = temp;
         }
 
@@ -138,11 +138,11 @@ class Controller {
         System.exit(0);
     }
 
-    private Port conditionsToTrickCard(Port master, Port slave) {
+    private PlayerCard conditionsToTrickCard(PlayerCard master, PlayerCard slave) {
         boolean checkIfSlaveIsHigher = slave.getCard().getValue() > master.getCard().getValue();
         boolean checkIfSlaveMatchescolour = slave.getCard().getColor().equals(master.getCard().getColor());
-        boolean checkIfSlaveIsTrumpf = slave.getCard().getColor().equals(deck.getTrumpfColor());
-        boolean checkIfMasterIsTrumpf = master.getCard().getColor().equals(deck.getTrumpfColor());
+        boolean checkIfSlaveIsTrumpf = slave.getCard().getColor().equals(deck.getTrumpColor());
+        boolean checkIfMasterIsTrumpf = master.getCard().getColor().equals(deck.getTrumpColor());
 
         if ((checkIfSlaveIsHigher && checkIfSlaveMatchescolour) || (checkIfSlaveIsTrumpf && !checkIfMasterIsTrumpf)) {
             master = slave;
@@ -175,8 +175,8 @@ class Controller {
     }
 
     Boolean checkColour(Card card) {
-        boolean checkIfCardmatchescolour = card.getColor().equals(ports.get(0).getCard().getColor());
-        boolean checkIfCardIsTrumpf = card.getColor().equals(deck.getTrumpfColor());
+        boolean checkIfCardmatchescolour = card.getColor().equals(playerCards.get(0).getCard().getColor());
+        boolean checkIfCardIsTrumpf = card.getColor().equals(deck.getTrumpColor());
 
         return checkIfCardIsTrumpf || checkIfCardmatchescolour;
     }
@@ -210,7 +210,7 @@ class Controller {
     private void dealCards() {
 
         for (Player p : players) {
-            ArrayList<Card> tempStapel = new ArrayList<>(deck.getStapel());
+            ArrayList<Card> tempStapel = new ArrayList<>(deck.getDeck());
 
             ArrayList<Card> tempHand = new ArrayList<>();
 
@@ -218,7 +218,7 @@ class Controller {
 
                 if (tempHand.size() < 5) {
                     tempHand.add(c);
-                    deck.getStapel().remove(c);
+                    deck.getDeck().remove(c);
                 }
                 p.setCardsInHand(tempHand);
             }

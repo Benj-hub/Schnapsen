@@ -1,4 +1,4 @@
-// created by Benjamin Lamprecht
+// created by Benjamin Lamprecht 2020
 
 public class Game {
 

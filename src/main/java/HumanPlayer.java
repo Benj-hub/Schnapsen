@@ -1,3 +1,5 @@
+// created by Benjamin Lamprecht 2020
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 

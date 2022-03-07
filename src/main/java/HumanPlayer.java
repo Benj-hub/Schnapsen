@@ -56,15 +56,15 @@ public class HumanPlayer extends Player {
                         System.out.println("Which card do you change the Trump with?");
                         showCardsToThrow();
                         i = scanner.nextInt();
-                        changeTrumpfCard(getCardsInHand().get(i-1));
+                        changeTrumpCard(getCardsInHand().get(i-1));
                         break;
                 case 8:
                         if (controller.getDeck().getDeck().size() > 0) {
-                            System.out.println(name + " blocked the Stapel");
-                            controller.deck.blockStapel();
+                            System.out.println(name + " blocked the Deck");
+                            controller.deck.blockDeck();
                             System.out.println("What action shall follow?");
                         } else {
-                            System.out.println("Stapel already blocked!");
+                            System.out.println("Deck already blocked!");
                         }
                         break;
                 case 9:

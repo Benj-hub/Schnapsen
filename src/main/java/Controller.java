@@ -22,7 +22,8 @@ class Controller {
         createOtherPlayer();
         dealCards();
 
-        System.out.println(Fonts.BLUE_BOLD + "Trumpf card is: " + deck.getTrump().getName() + Fonts.RESET);
+        System.out.println(Fonts.BLUE_BOLD + "Trump card is: " + deck.getTrump().getName() + Fonts.RESET);
+        System.out.println();
     }
 
     protected boolean isNoCardsInHand(){
@@ -70,8 +71,7 @@ class Controller {
     }
 
     Player turnSwitcher(Player player) {
-        //System.out.println("started turnswitcher");
-        System.out.println(Fonts.BLUE_BOLD + "Turn ended" + Fonts.RESET);
+        System.out.println(Fonts.BLUE_BOLD + "Turn ended\n\n" + Fonts.RESET);
 
         int i = 1;
         if (playerCards.size() > 0) {
@@ -130,11 +130,11 @@ class Controller {
 
     private PlayerCard conditionsToTrickCard(PlayerCard master, PlayerCard slave) {
         boolean checkIfSlaveIsHigher = slave.getCard().getValue() > master.getCard().getValue();
-        boolean checkIfSlaveMatchescolour = slave.getCard().getColor().equals(master.getCard().getColor());
-        boolean checkIfSlaveIsTrumpf = slave.getCard().getColor().equals(deck.getTrumpColor());
-        boolean checkIfMasterIsTrumpf = master.getCard().getColor().equals(deck.getTrumpColor());
+        boolean checkIfSlaveMatchesColor = slave.getCard().getColor().equals(master.getCard().getColor());
+        boolean checkIfSlaveIsTrump = slave.getCard().getColor().equals(deck.getTrumpColor());
+        boolean checkIfMasterIsTrump = master.getCard().getColor().equals(deck.getTrumpColor());
 
-        if ((checkIfSlaveIsHigher && checkIfSlaveMatchescolour) || (checkIfSlaveIsTrumpf && !checkIfMasterIsTrumpf)) {
+        if ((checkIfSlaveIsHigher && checkIfSlaveMatchesColor) || (checkIfSlaveIsTrump && !checkIfMasterIsTrump)) {
             master = slave;
         }
         return master;
@@ -165,14 +165,14 @@ class Controller {
     }
 
     Boolean checkColour(Card card) {
-        boolean checkIfCardmatchescolour = card.getColor().equals(playerCards.get(0).getCard().getColor());
-        boolean checkIfCardIsTrumpf = card.getColor().equals(deck.getTrumpColor());
+        boolean checkIfCardMatchesColor = card.getColor().equals(playerCards.get(0).getCard().getColor());
+        boolean checkIfCardIsTrump = card.getColor().equals(deck.getTrumpColor());
 
-        return checkIfCardIsTrumpf || checkIfCardmatchescolour;
+        return checkIfCardIsTrump || checkIfCardMatchesColor;
     }
 
     private void createOtherPlayer() {
-            players.add(new NPC( 1, this));
+            players.add(new NPC( this));
 
         Collections.shuffle(players);
 
@@ -188,11 +188,11 @@ class Controller {
     private void dealCards() {
 
         for (Player p : players) {
-            ArrayList<Card> tempStapel = new ArrayList<>(deck.getDeck());
+            ArrayList<Card> tempDeck = new ArrayList<>(deck.getDeck());
 
             ArrayList<Card> tempHand = new ArrayList<>();
 
-            for (Card c : tempStapel) {
+            for (Card c : tempDeck) {
 
                 if (tempHand.size() < 5) {
                     tempHand.add(c);

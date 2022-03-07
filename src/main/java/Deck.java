@@ -5,21 +5,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 class Deck {
-
-    private final String DB_DECK = "DoppelDeutscheKarten.db";
-    private final String CONNECTION_STRING = "jdbc:sqlite::resource:" + DB_DECK;
-
     private Card trump;
     private String trumpColor;
     private final ArrayList<Card> deck;
 
     public Deck() {
-        deck = collectStapel(new ArrayList<Card>());
+        deck = collectDeck(new ArrayList<Card>());
     }
 
     protected void dealDeck (){
         Collections.shuffle(deck);
-        trump = trumpf(deck);
+        trump = trump(deck);
         trumpColor = trump.getColor();
         try {
             Thread.sleep(1000);
@@ -28,35 +24,22 @@ class Deck {
         }
     }
 
-    public void blockStapel() {
-        ArrayList<Card> tempStapel = new ArrayList<>(deck);
-        for (Card c : tempStapel) {
+    public void blockDeck() {
+        ArrayList<Card> tempDeck = new ArrayList<>(deck);
+        for (Card c : tempDeck) {
             deck.remove(c);
         }
     }
 
-
-    public Card trumpChange(Card card) {
-        if (this.getTrump().getColor().equals(card.getColor())) {
-            Card temp = this.getTrump();
-            System.out.println("Trumpf: " + this.getTrump().getName() + " exchanged to " + card.getName());
-            trump = card;
-            return temp;
-        } else {
-            System.out.println("Cannot change Trumpf");
-            return card;
-        }
-    }
-
-
-    private Card trumpf(ArrayList<Card> stapel) {
-        Card card = stapel.get(0);
-        stapel.remove(card);
+    private Card trump(ArrayList<Card> deck) {
+        Card card = deck.get(0);
+        deck.remove(card);
         return card;
     }
 
-    public ArrayList<Card> collectStapel(ArrayList<Card> stapel) {
-
+    public ArrayList<Card> collectDeck(ArrayList<Card> deck) {
+        String DB_DECK = "DoppelDeutscheKarten.db";
+        String CONNECTION_STRING = "jdbc:sqlite::resource:" + DB_DECK;
         try {
             Class.forName("org.sqlite.JDBC");
             Connection conn = DriverManager.getConnection(CONNECTION_STRING);
@@ -88,7 +71,7 @@ class Deck {
                             break;
                     }
                     if (card.getValue() > 0) {
-                        stapel.add(card);
+                        deck.add(card);
                     }
                 }
 
@@ -102,7 +85,7 @@ class Deck {
             System.out.println("Couldn't connect to db: " + e.getMessage());
         }
 
-        return stapel;
+        return deck;
     }
 
     public Card getTrump() {
@@ -117,7 +100,7 @@ class Deck {
         return deck;
     }
 
-    public void setTrump(Card trumpf) {
-        this.trump = trumpf;
+    public void setTrump(Card trump) {
+        this.trump = trump;
     }
 }

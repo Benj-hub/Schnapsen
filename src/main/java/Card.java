@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Card {
 
-    private final String name;
+    private String name;
     private int value;
-    private final String color;
+    private String color;
 
     public Card(String name, String color, int value) {
         this.name = name;

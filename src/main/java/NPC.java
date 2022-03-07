@@ -10,28 +10,29 @@ public class NPC extends Player {
     private final ArrayList<Card> countDiamond = new ArrayList<>();
     private final ArrayList<Card> countSpade = new ArrayList<>();
     private final ArrayList<Card> countCross = new ArrayList<>();
-    private final String trumpf = controller.deck.getTrump().getColor();
+    private final String trump = controller.deck.getTrump().getColor();
     private final ArrayList<Card> countTrumpCards = filterCards(controller.deck.getTrump());
 
-    NPC(int i, Controller controller) {
+    NPC(Controller controller) {
         super(controller);
-        name = "Machine-" + i;
+        name = "Machine";
         couldBeInOthersHand();
     }
 
     @Override
     protected PlayerCard playerAction() {
+        System.out.println(Fonts.BLUE_BOLD + name + " is on turn" + Fonts.RESET);
         throwCard.clear();
         PlayerCard cardOutput;
 
         //checking if NPC is on turn
         if (controller.playerCards.size() == 0) {
             endingGame();
-            blockStapel();
+            blockDeck();
             //check if NPC should change Trump
             Card card = lookToChangeTrumpCard();
             if (card != null) {
-                changeTrumpfCard(card);
+                changeTrumpCard(card);
             }
             Card pairs = callPairs();
             if (pairs != null) {
@@ -61,10 +62,10 @@ public class NPC extends Player {
     }
 
     private boolean conditionsToChangeTrumpCard(Card card) {
-        boolean cardmatchescolour = card.getColor().equals(controller.deck.getTrumpColor());
-        boolean cardIsBube = card.getValue() == 2;
+        boolean cardMatchesColor = card.getColor().equals(controller.deck.getTrumpColor());
+        boolean cardIsPrince = card.getValue() == 2;
 
-        return cardmatchescolour && cardIsBube;
+        return cardMatchesColor && cardIsPrince;
     }
 
     @Override
@@ -170,10 +171,9 @@ public class NPC extends Player {
         }
     }
 
-    private void blockStapel() {
-        //System.out.println("requesting blockstapel");
+    private void blockDeck() {
         if (66 <= (possiblePoints()) + score) {
-            controller.deck.blockStapel();
+            controller.deck.blockDeck();
         }
     }
 
@@ -183,24 +183,22 @@ public class NPC extends Player {
 
     private int possiblePoints() {
         int possiblePoints = 0;
-        int thrownpoints = 0;
+        int thrownPoints = 0;
 
         for (PlayerCard c : thrownCards) {
             if (c.getCard().getValue() > 9) {
-                thrownpoints += c.getCard().getValue();
+                thrownPoints += c.getCard().getValue();
             }
-            possiblePoints = 108 - thrownpoints;
+            possiblePoints = 108 - thrownPoints;
 
         }
         return possiblePoints;
     }
 
-    private String playerCouldntmatchCard() {
+    private String playerCannotMatchCard() {
         for (int i = thrownCards.size()-1; i > controller.getPlayers().size(); i--) {
             Card dealCard = thrownCards.get(controller.getPlayers().size()-1).getCard();
             if (!thrownCards.get(i).getCard().getColor().equals(dealCard.getColor())) {
-                //System.out.println(throwCard.get(i).getName() + " failed to match Card");
-                //System.out.println("throw " + thrownCards.get(i).getCard() + " to gain points");
                 return dealCard.getColor();
             }
         }
@@ -215,15 +213,16 @@ public class NPC extends Player {
     }
 
     private void advancedConditionsToThrowCard(Card card) {
-        boolean trumpfisGone = countTrumpCards.isEmpty();
-        boolean isntTrumpf = !card.getColor().equals(trumpf);
+        assert countTrumpCards != null;
+        boolean trumpIsGone = countTrumpCards.isEmpty();
+        boolean isNotTrump = !card.getColor().equals(trump);
         boolean highestCardInStack = card.getValue() == getHighestCardInStack(card).getValue();
 
         if (saveToPlay(card)) {
             throwCard.add(card);
-        } else if (trumpfisGone && isntTrumpf && highestCardInStack) {
+        } else if (trumpIsGone && isNotTrump && highestCardInStack) {
                 throwCard.add(card);
-            } else if (Objects.equals(playerCouldntmatchCard(), card.getColor())) {
+            } else if (Objects.equals(playerCannotMatchCard(), card.getColor())) {
         throwCard.add(card);
     } else if (highestCardInStack) {
                     throwCard.add(card);
@@ -240,7 +239,7 @@ public class NPC extends Player {
     }
 
     private boolean saveToPlay(Card card) {
-        return Objects.requireNonNull(filterCards(card)).size() == 0 && !filterCards(card).equals(countTrumpCards);
+        return Objects.requireNonNull(filterCards(card)).size() == 0 && !Objects.equals(filterCards(card), countTrumpCards);
     }
 
     private ArrayList<Card> filterCards(Card card) {

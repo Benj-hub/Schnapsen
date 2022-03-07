@@ -68,13 +68,13 @@ public abstract class Player {
             if (controller.deck.getTrump() != null) {
                 drawTrump();
             }
-            System.out.println(Fonts.YELLOW_BOLD + "Stapel is empty!" + Fonts.RESET);
+            System.out.println(Fonts.YELLOW_BOLD + "Deck is empty!" + Fonts.RESET);
         } else {
             drawNewCard();
         }
     }
 
-    protected void changeTrumpfCard(Card card) {
+    protected void changeTrumpCard(Card card) {
         if (card.getColor().equals(controller.getDeck().getTrump().getColor()) && card.getValue() == 2) {
             cardsInHand.add(controller.deck.getTrump());
             controller.deck.setTrump(card);

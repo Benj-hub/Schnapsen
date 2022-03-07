@@ -23,7 +23,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        main
+                                        Game
                                     </mainClass>
                                 </manifest>
                             </archive>

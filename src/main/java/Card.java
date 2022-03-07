@@ -3,7 +3,6 @@
 import java.util.Objects;
 
 public class Card {
-
     private String name;
     private int value;
     private String color;
